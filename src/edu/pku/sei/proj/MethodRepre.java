@@ -1,18 +1,46 @@
 package edu.pku.sei.proj;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MethodRepre {
 	private ClassRepre cls;
+	private int flag;
 	private String name;
 	private String returnType;
-	private List<LocalRepre> params;
+	
+	private boolean isConstructor;
+	private List<LocalRepre> params = new ArrayList<>(0);
+	
+	public MethodRepre(ClassRepre cls, int flag, String name, String returnType, boolean isConstructor) {
+		super();
+		this.cls = cls;
+		this.flag = flag;
+		this.name = name;
+		this.returnType = returnType;
+		this.isConstructor = isConstructor;
+	}
 	
 	public ClassRepre getCls() {
 		return cls;
 	}
 	public void setCls(ClassRepre cls) {
 		this.cls = cls;
+	}
+	
+	public boolean isConstructor() {
+		return isConstructor;
+	}
+
+	public void setConstructor(boolean isConstructor) {
+		this.isConstructor = isConstructor;
+	}
+
+	public int getFlag() {
+		return flag;
+	}
+	public void setFlag(int flag) {
+		this.flag = flag;
 	}
 	public String getName() {
 		return name;
@@ -29,9 +57,14 @@ public class MethodRepre {
 	public List<LocalRepre> getParams() {
 		return params;
 	}
-	public void setParams(List<LocalRepre> params) {
-		this.params = params;
+	
+	public void insertParam(LocalRepre param){
+		params.add(param);
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "MethodRepre [flag=" + flag + ", name=" + name + ", returnType=" + returnType + "]";
+	}
+
 }

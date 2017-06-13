@@ -1,6 +1,7 @@
 package edu.pku.sei.proj;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassRepre {
@@ -9,21 +10,22 @@ public class ClassRepre {
 	private PackageRepre pkg;
 	private String name;
 	
-	private ClassRepre fatherCls;
+	private String fatherCls;
 	private List<ClassRepre> superInterfaces;
 	
 	private boolean isInterface;
 
 	private int flag;
 	
-	private List<FiledRepre> fields;
-	private List<MethodRepre> methods;
+	private List<FiledRepre> fields = new ArrayList<>();
+	private List<MethodRepre> methods = new ArrayList<>();;
 	
 	
 	private List<ClassRepre> innerClazzes;
 	
-	private ClassRepre(File srcFile, String clsName) {
+	public ClassRepre(File srcFile, PackageRepre pkg, String clsName) {
 		super();
+		this.pkg = pkg;
 		this.srcFile = srcFile;
 		this.name = clsName;
 	}
@@ -46,10 +48,10 @@ public class ClassRepre {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public ClassRepre getFatherCls() {
+	public String getFatherCls() {
 		return fatherCls;
 	}
-	public void setFatherCls(ClassRepre fatherCls) {
+	public void setFatherCls(String fatherCls) {
 		this.fatherCls = fatherCls;
 	}
 	public List<ClassRepre> getSuperInterfaces() {
@@ -73,24 +75,33 @@ public class ClassRepre {
 		this.flag = flag;
 	}
 
+	public void insertFieldRepre(FiledRepre field){
+		fields.add(field);
+	}
+	
 	public List<FiledRepre> getFields() {
 		return fields;
 	}
-	public void setFields(List<FiledRepre> fields) {
-		this.fields = fields;
+	
+	public void insertMethodRepre(MethodRepre method){
+		methods.add(method);
 	}
+
 	public List<MethodRepre> getMethods() {
 		return methods;
 	}
-	public void setMethods(List<MethodRepre> methods) {
-		this.methods = methods;
-	}
+
 	public List<ClassRepre> getInnerClazzes() {
 		return innerClazzes;
 	}
 
 	public void setInnerClazzes(List<ClassRepre> innerClazzes) {
 		this.innerClazzes = innerClazzes;
+	}
+
+	@Override
+	public String toString() {
+		return "ClassRepre [pkg=" + pkg + ", name=" + name + ", fatherCls=" + fatherCls + ", flag=" + flag + "]";
 	}	
 	
 }

@@ -1,5 +1,6 @@
 package edu.pku.sei.proj;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,10 +20,26 @@ public class PackageRepre {
 		clazzesMap.put(className, classRepre);
 	}
 	
-	public ClassRepre getClassRepre(String className){
+//	public ClassRepre getClassRepre(String className){
+//		if(clazzesMap.containsKey(className)){
+//			return clazzesMap.get(className);
+//		}
+//		return null;
+//	}
+	
+	public ClassRepre getOrNewClassRepre(File srcFile, String className){
 		if(clazzesMap.containsKey(className)){
 			return clazzesMap.get(className);
+		}else{
+			ClassRepre cls = new ClassRepre(srcFile, this, className);
+			clazzesMap.put(className, cls);
+			return cls;
 		}
-		return null;
 	}
+
+	@Override
+	public String toString() {
+		return "PackageRepre [pkgName=" + pkgName + "]";
+	}
+		
 }

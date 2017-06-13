@@ -5,6 +5,13 @@ public abstract class MemoryCell {
 	protected String name;
 	protected String type;
 	
+	public MemoryCell(ClassRepre cls, String name, String type) {
+		super();
+		this.cls = cls;
+		this.name = name;
+		this.type = type;
+	}
+	
 	public ClassRepre getCls() {
 		return cls;
 	}
