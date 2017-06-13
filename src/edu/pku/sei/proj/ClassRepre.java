@@ -10,7 +10,7 @@ public class ClassRepre {
 	private PackageRepre pkg;
 	private String name;
 	
-	private String fatherCls;
+	private ClassRepre fatherCls;
 	private List<ClassRepre> superInterfaces;
 	
 	private boolean isInterface;
@@ -48,10 +48,10 @@ public class ClassRepre {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getFatherCls() {
+	public ClassRepre getFatherCls() {
 		return fatherCls;
 	}
-	public void setFatherCls(String fatherCls) {
+	public void setFatherCls(ClassRepre fatherCls) {
 		this.fatherCls = fatherCls;
 	}
 	public List<ClassRepre> getSuperInterfaces() {
@@ -101,7 +101,7 @@ public class ClassRepre {
 
 	@Override
 	public String toString() {
-		return "ClassRepre [pkg=" + pkg + ", name=" + name + ", fatherCls=" + fatherCls + ", flag=" + flag + "]";
+		return "ClassRepre [pkg=" + pkg + ", name=" + name  + (fatherCls == null ? " " : ", fatherCls= " + fatherCls.getName()) + ", flag=" + flag + "]";
 	}	
 	
 }

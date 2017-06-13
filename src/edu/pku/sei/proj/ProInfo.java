@@ -1,6 +1,12 @@
 package edu.pku.sei.proj;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -12,13 +18,41 @@ public class ProInfo {
 
 	private ProjectRepre projectRepre;
 	
+	public static Set<String> javaDotLangClasses = new HashSet<>();
+	
+	static{
+		try {
+			FileReader fr = new FileReader("java_lang_clazzes.txt");
+			BufferedReader br = new BufferedReader(fr);
+			String curLine = null;
+			while((curLine = br.readLine()) != null){
+				javaDotLangClasses.add(curLine.trim());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
 	public static void main(String[] args){
 		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/main/java/";
 		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/test/java";
-		ProInfo proInfo = new ProInfo("math_37", srcRoot, testRoot);
+		String project = "math_37";
 		
-		File rootFile = new File(srcRoot);
-		proInfo.traverseSrcFolder(rootFile, "");
+//		if(args.length != 3){
+//			System.err.println("ERR ARGS NUM");
+//			return;
+//		}
+//		String project = args[0];
+//		String srcRoot = args[1];
+//		String testRoot = args[2];
+		
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot);
+		
+		proInfo.collectProInfo();
 	}
 	
 	public ProInfo(String proName, String srcRoot, String testRoot){
@@ -32,7 +66,56 @@ public class ProInfo {
 		return projectRepre;
 	}
 
-	public void traverseSrcFolder(File root, String curPkg){
+	public void collectProInfo(){
+		File rootFile = new File(srcRoot);
+		this.traverseSrcFolderFirstLoop(rootFile, "");
+		this.traverseSrcFolderSecondLoop(rootFile, "");
+	}
+	
+	private void traverseSrcFolderFirstLoop(File root, String curPkg){
+		File[] files = root.listFiles();
+		
+		if(files == null){
+			return;
+		}
+		
+		PackageRepre pkgRepre = projectRepre.getOrNewPackage(curPkg);
+		for (int i = 0; i < files.length; i++) {
+			String fileName = files[i].getName();
+			
+			if (files[i].isDirectory()) {
+				
+				String childPkg = null;
+				if(curPkg.equals("")){
+					childPkg = files[i].getName();
+				}else{
+					childPkg = curPkg + "." + files[i].getName();
+				}
+				
+				traverseSrcFolderFirstLoop(files[i], childPkg);
+				
+			} else if (fileName.endsWith(".java")) {
+				
+				CompilationUnit cu = (CompilationUnit) JavaFile.genASTFromSource(JavaFile.readFileToString(files[i]), ASTParser.K_COMPILATION_UNIT);
+				
+//				System.out.println(curPkg);
+//				System.out.println(files[i].getName());
+
+				String mainClsName = fileName.substring(0, fileName.length() - 5);
+
+				ClassRepre mainCls = projectRepre.getOrNewClassRepre(pkgRepre, files[i], mainClsName);
+
+				ClsCollectorVisitor visitor = new ClsCollectorVisitor(files[i], projectRepre, pkgRepre, mainCls);
+				
+				cu.accept(visitor);
+				
+			} else {
+				continue;
+			}
+		}
+	}
+	
+	private void traverseSrcFolderSecondLoop(File root, String curPkg){
 		File[] files = root.listFiles();
 		
 		if(files == null){
@@ -54,7 +137,7 @@ public class ProInfo {
 					childPkg = curPkg + "." + files[i].getName();
 				}
 				
-				traverseSrcFolder(files[i], childPkg);
+				traverseSrcFolderSecondLoop(files[i], childPkg);
 				
 			} else if (fileName.endsWith(".java")) {
 				
@@ -65,8 +148,10 @@ public class ProInfo {
 
 				String mainClsName = fileName.substring(0, fileName.length() - 5);
 
-				ClassRepre mainCls = projectRepre.getOrNewClassRepre(pkgRepre, files[i], mainClsName);
+				ClassRepre mainCls = projectRepre.getClassRepre(pkgRepre, mainClsName);
 
+				assert mainCls != null;
+				
 				ProjectVisitor visitor = new ProjectVisitor(files[i], projectRepre, pkgRepre, mainCls);
 				
 				cu.accept(visitor);

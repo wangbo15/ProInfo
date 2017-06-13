@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -65,7 +66,10 @@ public class ProjectVisitor extends ASTVisitor {
 			return false;			
 		}
 		String className = node.getName().getIdentifier();
-		ClassRepre currentCls = this.pkgRepre.getOrNewClassRepre(file, className);
+		ClassRepre currentCls = this.pkgRepre.getClassRepre(className);
+		
+		assert currentCls != null;
+		
 		int flag = node.getModifiers();
 		
 		if(className.equals(mainCls.getName())){
@@ -76,21 +80,40 @@ public class ProjectVisitor extends ASTVisitor {
 		currentCls.setInterface(node.isInterface());
 		
 		Type superTp = 	node.getSuperclassType();
-		if(superTp != null){
-			//TODO:: differnt type class
+		
+		if(superTp instanceof ParameterizedType){
+			superTp = ((ParameterizedType) superTp).getType();
+		}
+
+		if (superTp != null) {
 			String superTpStr = superTp.toString();
-			String fullCls = null;
+			//TODO:: differnt type class
+			String fullClsName = null;
+			
+			//1. search from imported classes
 			for(String imp : importedClazzes){
 				if(imp.endsWith(superTpStr)){
-					fullCls = imp;
+					fullClsName = imp;
 					break;
 				}
 			}
-			if(fullCls != null){
-				currentCls.setFatherCls(fullCls);
-			}else{
-				currentCls.setFatherCls(superTpStr);
+			//2. if not found, serach from the same package
+			if(fullClsName == null){
+				ClassRepre fatherCls = pkgRepre.getClassRepre(superTpStr);
+								
+				if(fatherCls != null){
+					currentCls.setFatherCls(fatherCls);
+				}else{
+					if(! ProInfo.javaDotLangClasses.contains(superTpStr)){
+						System.err.println(superTpStr);
+						System.exit(1);
+					}
+				}
 			}
+			
+//			fatherCls = projectRepre.fullNameToClazzesMap.get(fullClsName); 
+			
+			
 		}
 		
 		System.out.println("INSERT CLS: " + currentCls);
@@ -125,7 +148,7 @@ public class ProjectVisitor extends ASTVisitor {
 				
 				FiledRepre field = new FiledRepre(clsRepre, node.getType().toString(), frag.getName().toString(), flag);
 				clsRepre.insertFieldRepre(field);
-				System.out.println("INSERT FLD: " + field);
+//				System.out.println("INSERT FLD: " + field);
 
 			}
 			
@@ -145,7 +168,7 @@ public class ProjectVisitor extends ASTVisitor {
 			
 			clsRepre.insertMethodRepre(mtdRepre);
 			
-			System.out.println("INSERT MTD: " + mtdRepre);
+//			System.out.println("INSERT MTD: " + mtdRepre);
 			
 			List params = node.parameters();
 			if(params != null && params.size() > 0){

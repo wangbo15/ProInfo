@@ -20,12 +20,12 @@ public class PackageRepre {
 		clazzesMap.put(className, classRepre);
 	}
 	
-//	public ClassRepre getClassRepre(String className){
-//		if(clazzesMap.containsKey(className)){
-//			return clazzesMap.get(className);
-//		}
-//		return null;
-//	}
+	public ClassRepre getClassRepre(String className){
+		if(clazzesMap.containsKey(className)){
+			return clazzesMap.get(className);
+		}
+		return null;
+	}
 	
 	public ClassRepre getOrNewClassRepre(File srcFile, String className){
 		if(clazzesMap.containsKey(className)){
