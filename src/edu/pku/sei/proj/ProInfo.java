@@ -22,7 +22,10 @@ public class ProInfo {
 	
 	static{
 		try {
-			FileReader fr = new FileReader("java_lang_clazzes.txt");
+			String path = Class.class.getClass().getResource("/").getPath();
+			File root = new File(path);
+			root = root.getParentFile();
+			FileReader fr = new FileReader(root.getAbsolutePath() + "/java_lang_clazzes.txt");
 			BufferedReader br = new BufferedReader(fr);
 			String curLine = null;
 			while((curLine = br.readLine()) != null){
@@ -38,10 +41,13 @@ public class ProInfo {
 	
 	
 	public static void main(String[] args){
-		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/main/java/";
-		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/test/java";
-		String project = "math_37";
+//		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/main/java/";
+//		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/test/java";
+//		String project = "math_37";
 		
+		String srcRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/source";
+		String testRoot = null;
+		String project = "chart_1";
 //		if(args.length != 3){
 //			System.err.println("ERR ARGS NUM");
 //			return;
@@ -122,7 +128,7 @@ public class ProInfo {
 			return;
 		}
 		
-		PackageRepre pkgRepre = projectRepre.getOrNewPackage(curPkg);
+		PackageRepre pkgRepre = projectRepre.getPackage(curPkg);
 		
 		
 		for (int i = 0; i < files.length; i++) {

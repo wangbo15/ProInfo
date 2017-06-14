@@ -17,7 +17,7 @@ public class ClassRepre {
 
 	private int flag;
 	
-	private List<FiledRepre> fields = new ArrayList<>();
+	private List<FieldRepre> fields = new ArrayList<>();
 	private List<MethodRepre> methods = new ArrayList<>();;
 	
 	
@@ -75,11 +75,11 @@ public class ClassRepre {
 		this.flag = flag;
 	}
 
-	public void insertFieldRepre(FiledRepre field){
+	public void insertFieldRepre(FieldRepre field){
 		fields.add(field);
 	}
 	
-	public List<FiledRepre> getFields() {
+	public List<FieldRepre> getFields() {
 		return fields;
 	}
 	

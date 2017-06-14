@@ -1,6 +1,7 @@
 package edu.pku.sei.proj;
 
 import java.io.File;
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -50,8 +51,26 @@ public class ProjectVisitor extends ASTVisitor {
 		
 		for (Iterator it = node.imports().iterator(); it.hasNext(); ){
 			ImportDeclaration impDecl = (ImportDeclaration) it.next();
-			Name nm = impDecl.getName();
-			importedClazzes.add(nm.toString());
+			
+			if(impDecl.isOnDemand()){
+				
+				String loadAllPkg = impDecl.getName().toString();
+				
+				PackageRepre loadAll = projectRepre.getPackage(loadAllPkg);
+				
+				for(ClassRepre cls : loadAll.getClazzesMap().values()){
+					int flag = cls.getFlag();
+					if(Modifier.isPublic(flag)){
+						importedClazzes.add(loadAllPkg + "." + cls.getName());
+					}
+				}
+				
+//				System.err.println(loadAllPkg);
+				
+			}else{
+				Name nm = impDecl.getName();
+				importedClazzes.add(nm.toString());
+			}
 		}
 		
 		
@@ -92,7 +111,7 @@ public class ProjectVisitor extends ASTVisitor {
 			
 			//1. search from imported classes
 			for(String imp : importedClazzes){
-				if(imp.endsWith(superTpStr)){
+				if(imp.endsWith(superTpStr) && (imp.lastIndexOf(".") + 1 + superTpStr.length() == imp.length())){
 					fullClsName = imp;
 					break;
 				}
@@ -104,14 +123,24 @@ public class ProjectVisitor extends ASTVisitor {
 				if(fatherCls != null){
 					currentCls.setFatherCls(fatherCls);
 				}else{
-					if(! ProInfo.javaDotLangClasses.contains(superTpStr)){
-						System.err.println(superTpStr);
+					if(! ProInfo.javaDotLangClasses.contains(superTpStr) && !superTpStr.startsWith("java.")){
+						System.err.println(className + " EXTENDS " + superTpStr);
 						System.exit(1);
 					}
 				}
+			}else{
+								
+				ClassRepre fatherCls = projectRepre.fullNameToClazzesMap.get(fullClsName);
+				
+				if(fatherCls != null){
+					currentCls.setFatherCls(fatherCls);
+				}else if(!(fullClsName.startsWith("java") || fullClsName.startsWith("org.xml"))){
+					System.err.println(fullClsName);
+					System.exit(1);
+				}
+				
 			}
 			
-//			fatherCls = projectRepre.fullNameToClazzesMap.get(fullClsName); 
 			
 			
 		}
@@ -123,7 +152,7 @@ public class ProjectVisitor extends ASTVisitor {
 			ASTNode body = (ASTNode) it.next();
 			if(body instanceof FieldDeclaration || body instanceof MethodDeclaration){
 				FieldOrMethodVisitor fldVisitor = new FieldOrMethodVisitor(currentCls);
-				node.accept(fldVisitor);
+				body.accept(fldVisitor);
 			}
 		}	
 		
@@ -146,7 +175,7 @@ public class ProjectVisitor extends ASTVisitor {
 			for (Iterator it = node.fragments().iterator();it.hasNext();){
 				VariableDeclarationFragment frag = (VariableDeclarationFragment) it.next();
 				
-				FiledRepre field = new FiledRepre(clsRepre, node.getType().toString(), frag.getName().toString(), flag);
+				FieldRepre field = new FieldRepre(clsRepre, frag.getName().toString(), node.getType().toString(), flag);
 				clsRepre.insertFieldRepre(field);
 //				System.out.println("INSERT FLD: " + field);
 

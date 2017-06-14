@@ -51,6 +51,13 @@ public class ProjectRepre {
 		}
 	}
 
+	public PackageRepre getPackage(String pkgName){
+		
+		assert allPackageMap.containsKey(pkgName);
+		
+		return allPackageMap.get(pkgName);
+	}
+	
 	public ClassRepre getOrNewClassRepre(PackageRepre pkg, File srcFile, String clsName){
 		return pkg.getOrNewClassRepre(srcFile, clsName);
 	}

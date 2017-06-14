@@ -1,10 +1,10 @@
 package edu.pku.sei.proj;
 
-public class FiledRepre extends MemoryCell{
+public class FieldRepre extends MemoryCell{
 	
 	private int flag;
 
-	public FiledRepre(ClassRepre cls, String name, String type, int flag) {
+	public FieldRepre(ClassRepre cls, String name, String type, int flag) {
 		super(cls, name, type);
 		this.flag = flag;
 	}

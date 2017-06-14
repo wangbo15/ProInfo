@@ -36,6 +36,11 @@ public class PackageRepre {
 			return cls;
 		}
 	}
+	
+
+	public Map<String, ClassRepre> getClazzesMap() {
+		return clazzesMap;
+	}
 
 	@Override
 	public String toString() {
