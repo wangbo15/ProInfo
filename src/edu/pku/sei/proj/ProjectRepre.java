@@ -2,15 +2,15 @@ package edu.pku.sei.proj;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class ProjectRepre {
 	private String name;
 	private String srcRoot;
 	private String testRoot;
 		
-	private Map<String, PackageRepre> allPackageMap = new HashMap<>();
+	public Map<String, PackageRepre> allPackageMap = new HashMap<>();
 	
 	public Map<String, ClassRepre> fullNameToClazzesMap = new HashMap<>();
 
@@ -65,4 +65,20 @@ public class ProjectRepre {
 	public ClassRepre getClassRepre(PackageRepre pkg, String clsName){
 		return pkg.getClassRepre(clsName);
 	}
+	
+	
+	public void removeEmptyPkgs(){
+		Map<String, PackageRepre> tmpMap = new HashMap<>();
+		for(Entry<String, PackageRepre> entry : allPackageMap.entrySet()){
+			if(entry.getValue().getClazzesMap().size() == 0){
+				continue;
+			}else{
+				tmpMap.put(entry.getKey(), entry.getValue());
+			}
+		}
+		allPackageMap.clear();
+		allPackageMap = null;
+		allPackageMap = tmpMap;
+	}
+	
 }

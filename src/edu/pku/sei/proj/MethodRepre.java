@@ -1,5 +1,6 @@
 package edu.pku.sei.proj;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +66,29 @@ public class MethodRepre {
 	@Override
 	public String toString() {
 		return "MethodRepre [flag=" + flag + ", name=" + name + ", returnType=" + returnType + "]";
+	}
+	
+	public boolean isInherable(){
+		return Modifier.isPublic(this.flag) || Modifier.isProtected(this.flag);
+	}
+	
+	public boolean isSameTo(MethodRepre that){
+		if(this.name.equals(that.getName())){
+			if(this.params.size() == that.getParams().size()){
+				for(int i = 0; i < this.params.size(); i++){
+					if(!params.get(i).getType().equals(that.getParams().get(i).getType())){
+						return false;
+					}
+				}
+				
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+		
+		return true;
 	}
 
 }

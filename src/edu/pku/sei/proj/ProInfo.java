@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -76,6 +77,82 @@ public class ProInfo {
 		File rootFile = new File(srcRoot);
 		this.traverseSrcFolderFirstLoop(rootFile, "");
 		this.traverseSrcFolderSecondLoop(rootFile, "");
+		this.cleanUp();
+		this.mergeUntilFix();
+		System.out.println("PROJECT INFO FINISHED FOR " + proName);
+	}
+	
+	private void cleanUp(){
+		projectRepre.removeEmptyPkgs();
+
+	}
+	
+	private void mergeUntilFix(){
+		Set<ClassRepre> holdSuperCls = new HashSet<>();
+		for(ClassRepre cls : projectRepre.fullNameToClazzesMap.values()){
+			if(cls.getFatherCls() != null){
+				holdSuperCls.add(cls);
+			}
+		}
+
+		boolean changed = false;
+		do{
+			changed = false;
+			
+			for(ClassRepre cls : holdSuperCls){
+				
+				ClassRepre father = cls.getFatherCls();
+				
+				if(addFatherFldAndMtd(cls, father)){
+					changed = true;
+				}
+				
+			}
+		}while(changed);
+		
+	}
+	
+	
+	private boolean addFatherFldAndMtd(ClassRepre child, ClassRepre father){
+		
+		boolean changed = false;
+		
+		for(FieldRepre fatherFld : father.getFields()){
+			if(fatherFld.isInherable()){
+				boolean alreadyHas = false;
+				for(FieldRepre cldFld : child.getFields()){
+					//cld has the field already
+					if(cldFld.getName().equals(fatherFld.getName())){
+						alreadyHas = true;
+						break;
+					}
+				}
+				if(!alreadyHas){
+					child.getFields().add(fatherFld);
+					changed = true;
+				}
+			}
+		}
+		for(MethodRepre fatherMtd : father.getMethods()){
+			if(fatherMtd.isInherable()){
+				boolean alreadyHas = false;
+				for(MethodRepre cldMtd : child.getMethods()){
+					//cld has the method already, @Override is checked? Need 'cldMtd.isSameTo(fatherMtd)' ?
+					if(fatherMtd.isSameTo(cldMtd)){
+						alreadyHas = true;
+						break;
+					}
+				}
+				if(!alreadyHas){
+					child.getMethods().add(fatherMtd);
+					changed = true;
+				}
+				
+			}
+		}
+		
+		
+		return changed;
 	}
 	
 	private void traverseSrcFolderFirstLoop(File root, String curPkg){

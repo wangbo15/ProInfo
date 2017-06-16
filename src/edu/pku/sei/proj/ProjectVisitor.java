@@ -129,7 +129,6 @@ public class ProjectVisitor extends ASTVisitor {
 					}
 				}
 			}else{
-								
 				ClassRepre fatherCls = projectRepre.fullNameToClazzesMap.get(fullClsName);
 				
 				if(fatherCls != null){
@@ -140,12 +139,9 @@ public class ProjectVisitor extends ASTVisitor {
 				}
 				
 			}
-			
-			
-			
 		}
 		
-		System.out.println("INSERT CLS: " + currentCls);
+//		System.out.println("INSERT CLS: " + currentCls);
 		
 		for (Iterator it = node.bodyDeclarations().iterator(); it.hasNext();){
 			

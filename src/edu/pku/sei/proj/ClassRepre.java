@@ -18,7 +18,7 @@ public class ClassRepre {
 	private int flag;
 	
 	private List<FieldRepre> fields = new ArrayList<>();
-	private List<MethodRepre> methods = new ArrayList<>();;
+	private List<MethodRepre> methods = new ArrayList<>();
 	
 	
 	private List<ClassRepre> innerClazzes;
@@ -98,7 +98,27 @@ public class ClassRepre {
 	public void setInnerClazzes(List<ClassRepre> innerClazzes) {
 		this.innerClazzes = innerClazzes;
 	}
+	
+	public List<MethodRepre> getMethodRepreByName(String name){
+		List<MethodRepre> res = new ArrayList<>();
+		for(MethodRepre mtd : this.methods){
+			if(mtd.getName().equals(name)){
+				res.add(mtd);
+			}
+		}
+		return res;
+	}
 
+	public FieldRepre getFieldRepreByName(String name){
+		for(FieldRepre fld : this.fields){
+			if(fld.getName().equals(name)){
+				return fld;
+			}
+		}
+		return null;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "ClassRepre [pkg=" + pkg + ", name=" + name  + (fatherCls == null ? " " : ", fatherCls= " + fatherCls.getName()) + ", flag=" + flag + "]";
