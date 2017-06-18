@@ -35,6 +35,8 @@ public class ClsCollectorVisitor extends ASTVisitor {
 		String className = node.getName().getIdentifier();
 		ClassRepre currentCls = this.pkgRepre.getOrNewClassRepre(file, className);
 		
+		currentCls.setFlag(node.getModifiers());
+		
 		String fullName = pkgRepre.getPkgName() + "." + className;
 		projectRepre.fullNameToClazzesMap.put(fullName, currentCls);
 		

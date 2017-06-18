@@ -16,7 +16,7 @@ public class ClassRepre implements Serializable {
 	
 	private boolean isInterface;
 
-	private int flag;
+	private int flag = -1;
 	
 	private List<FieldRepre> fields = new ArrayList<>();
 	private List<MethodRepre> methods = new ArrayList<>();
@@ -122,7 +122,7 @@ public class ClassRepre implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "ClassRepre [pkg=" + pkg + ", name=" + name  + (fatherCls == null ? " " : ", fatherCls= " + fatherCls.getName()) + ", flag=" + flag + "]";
+		return pkg.getPkgName() + "." + name  + (fatherCls == null ? " " : " EXTENDS " + fatherCls.getName()) + ", flag=" + flag + "]";
 	}	
 	
 }

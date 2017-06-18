@@ -125,6 +125,7 @@ public class ProjectVisitor extends ASTVisitor {
 				}else{
 					if(! ProInfo.javaDotLangClasses.contains(superTpStr) && !superTpStr.startsWith("java.")){
 						System.err.println(className + " EXTENDS " + superTpStr);
+						System.err.println("EXIT");
 						System.exit(1);
 					}
 				}
@@ -133,7 +134,7 @@ public class ProjectVisitor extends ASTVisitor {
 				
 				if(fatherCls != null){
 					currentCls.setFatherCls(fatherCls);
-				}else if(!(fullClsName.startsWith("java") || fullClsName.startsWith("org.xml"))){
+				}else if(!(fullClsName.startsWith("java") || fullClsName.startsWith("org.xml") || fullClsName.startsWith("junit"))){
 					System.err.println(fullClsName);
 					System.exit(1);
 				}
@@ -141,7 +142,7 @@ public class ProjectVisitor extends ASTVisitor {
 			}
 		}
 		
-//		System.out.println("INSERT CLS: " + currentCls);
+		System.out.println("INSERT CLS: " + currentCls);
 		
 		for (Iterator it = node.bodyDeclarations().iterator(); it.hasNext();){
 			

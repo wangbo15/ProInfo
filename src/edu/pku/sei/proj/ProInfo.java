@@ -47,8 +47,8 @@ public class ProInfo implements Serializable  {
 //		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/test/java";
 //		String project = "math_37";
 		
-		String srcRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/source";
-		String testRoot = null;
+		String srcRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/source/";
+		String testRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/tests/";
 		String project = "chart_1";
 //		if(args.length != 3){
 //			System.err.println("ERR ARGS NUM");
@@ -75,9 +75,19 @@ public class ProInfo implements Serializable  {
 	}
 
 	public void collectProInfo(){
+		
+		assert srcRoot != null;
+		
 		File rootFile = new File(srcRoot);
 		this.traverseSrcFolderFirstLoop(rootFile, "");
 		this.traverseSrcFolderSecondLoop(rootFile, "");
+		
+		if(testRoot != null){
+			File testRootFile = new File(testRoot);
+			this.traverseSrcFolderFirstLoop(testRootFile, "");
+			this.traverseSrcFolderSecondLoop(testRootFile, "");
+		}
+		
 		this.cleanUp();
 		this.mergeUntilFix();
 		System.out.println(">>>> PROJECT INFO FINISHED FOR " + proName);
