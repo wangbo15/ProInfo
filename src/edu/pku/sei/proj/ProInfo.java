@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-public class ProInfo {
+public class ProInfo implements Serializable  {
 	private String proName;
 	private String srcRoot;
 	private String testRoot;
@@ -79,7 +80,7 @@ public class ProInfo {
 		this.traverseSrcFolderSecondLoop(rootFile, "");
 		this.cleanUp();
 		this.mergeUntilFix();
-		System.out.println("PROJECT INFO FINISHED FOR " + proName);
+		System.out.println(">>>> PROJECT INFO FINISHED FOR " + proName);
 	}
 	
 	private void cleanUp(){

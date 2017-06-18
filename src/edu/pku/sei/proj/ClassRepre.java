@@ -1,10 +1,11 @@
 package edu.pku.sei.proj;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassRepre {
+public class ClassRepre implements Serializable {
 	private File srcFile;
 	
 	private PackageRepre pkg;

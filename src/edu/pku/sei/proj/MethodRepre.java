@@ -1,10 +1,11 @@
 package edu.pku.sei.proj;
 
+import java.io.Serializable;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MethodRepre {
+public class MethodRepre implements Serializable  {
 	private ClassRepre cls;
 	private int flag;
 	private String name;

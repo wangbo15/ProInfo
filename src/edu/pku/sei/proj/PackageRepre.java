@@ -1,10 +1,11 @@
 package edu.pku.sei.proj;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PackageRepre {
+public class PackageRepre implements Serializable  {
 	private String pkgName;
 	private Map<String , ClassRepre> clazzesMap = new HashMap<>();
 	

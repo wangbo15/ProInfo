@@ -1,11 +1,12 @@
 package edu.pku.sei.proj;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class ProjectRepre {
+public class ProjectRepre implements Serializable {
 	private String name;
 	private String srcRoot;
 	private String testRoot;

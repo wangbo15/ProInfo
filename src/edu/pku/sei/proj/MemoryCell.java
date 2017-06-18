@@ -1,6 +1,8 @@
 package edu.pku.sei.proj;
 
-public abstract class MemoryCell {
+import java.io.Serializable;
+
+public abstract class MemoryCell implements Serializable  {
 	protected ClassRepre cls;
 	protected String name;
 	protected String type;
