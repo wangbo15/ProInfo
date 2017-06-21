@@ -43,17 +43,17 @@ public class ProInfo implements Serializable  {
 	
 	
 	public static void main(String[] args){
-//		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_12_buggy/src/main/java/";
-//		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_12_buggy/src/test/java";
-//		String project = "math_12";
+		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_20_buggy/src/main/java/";
+		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_20_buggy/src/test/java";
+		String project = "math_20";
 		
 //		String srcRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/source/";
 //		String testRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/tests/";
 //		String project = "chart_1";
 		
-		String srcRoot = "/home/nightwish/workspace/defects4j/src/time/time_1_buggy/src/main/java/";
-		String testRoot = "/home/nightwish/workspace/defects4j/src/time/time_1_buggy/src/test/java/";
-		String project = "time_1";
+//		String srcRoot = "/home/nightwish/workspace/defects4j/src/time/time_1_buggy/src/main/java/";
+//		String testRoot = "/home/nightwish/workspace/defects4j/src/time/time_1_buggy/src/test/java/";
+//		String project = "time_1";
 		
 		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot);
 		

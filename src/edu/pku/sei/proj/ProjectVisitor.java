@@ -120,10 +120,21 @@ public class ProjectVisitor extends ASTVisitor {
 					currentCls.setFatherCls(fatherCls);
 				}else{
 					//omit java.lang.*, java.* and junit.framework.TestCase
-					if(! ProInfo.javaDotLangClasses.contains(superTpStr) && !superTpStr.startsWith("java.")  && 
-							!superTpStr.equals("TestCase")){
+					if(! ProInfo.javaDotLangClasses.contains(superTpStr) && !superTpStr.startsWith("java.")  && !superTpStr.equals("TestCase")){
 						
-						throw new Error(className + " EXTENDS " + superTpStr);
+						//search from the same file
+						int idx = className.lastIndexOf("$");
+						if(idx < 0){
+							throw new Error(className + " EXTENDS " + superTpStr);
+						}
+						String superName = className.substring(0, idx + 1) + superTpStr;
+						
+						fatherCls = pkgRepre.getClassRepre(superName);
+						if(fatherCls != null){
+							currentCls.setFatherCls(fatherCls);
+						}else{
+							throw new Error(className + " EXTENDS " + superTpStr);
+						}
 					}
 				}
 			}else{

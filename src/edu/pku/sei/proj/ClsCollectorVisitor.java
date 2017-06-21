@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -46,20 +47,10 @@ public class ClsCollectorVisitor extends ASTVisitor {
 		String fileName = file.getName();
 		String mainClsName = fileName.substring(0, fileName.length() - 5);
 		
-			
 //		System.out.println(">>>>>>>>" + file.getName() + "  " + node.getName());
 //		System.out.println("\t\t\t" +  className);
-
 				
 		ClassRepre currentCls = this.pkgRepre.getOrNewClassRepre(file, node.getStartPosition(), className);
-
-		
-		
-//		currentCls.setMainCls(true);
-
-			
-		
-		
 
 		currentCls.setFlag(node.getModifiers());
 		
@@ -68,6 +59,6 @@ public class ClsCollectorVisitor extends ASTVisitor {
 		
 		return super.visit(node);
 	}
-	
+
 	
 }
