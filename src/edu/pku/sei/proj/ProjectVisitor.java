@@ -27,18 +27,16 @@ public class ProjectVisitor extends ASTVisitor {
 	private File file;
 	private ProjectRepre projectRepre;
 	private PackageRepre pkgRepre;
-	private ClassRepre mainCls;
 
 	
 	private Set<String> importedClazzes = new HashSet<>();
 
 	
-	public ProjectVisitor(File file, ProjectRepre projectRepre, PackageRepre pkgRepre, ClassRepre mainCls) {
+	public ProjectVisitor(File file, ProjectRepre projectRepre, PackageRepre pkgRepre) {
 		super();
 		this.file = file;
 		this.projectRepre = projectRepre;
 		this.pkgRepre = pkgRepre;
-		this.mainCls = mainCls;
 	}
 
 
@@ -55,6 +53,10 @@ public class ProjectVisitor extends ASTVisitor {
 			if(impDecl.isOnDemand()){
 				
 				String loadAllPkg = impDecl.getName().toString();
+				
+				if(PackageRepre.isJdkPackage(loadAllPkg)){
+					continue;
+				}
 				
 				PackageRepre loadAll = projectRepre.getPackage(loadAllPkg);
 				
@@ -80,20 +82,14 @@ public class ProjectVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration node) {
-		//skip inner clazzes
-		if(node.getParent() != node.getRoot()){
-			return false;			
-		}
-		String className = node.getName().getIdentifier();
+
+		String className = ClsCollectorVisitor.typeDeclToClassName(node);
+		
 		ClassRepre currentCls = this.pkgRepre.getClassRepre(className);
 		
 		assert currentCls != null;
 		
 		int flag = node.getModifiers();
-		
-		if(className.equals(mainCls.getName())){
-			assert mainCls == currentCls;
-		}
 		
 		currentCls.setFlag(flag);
 		currentCls.setInterface(node.isInterface());
@@ -123,10 +119,11 @@ public class ProjectVisitor extends ASTVisitor {
 				if(fatherCls != null){
 					currentCls.setFatherCls(fatherCls);
 				}else{
-					if(! ProInfo.javaDotLangClasses.contains(superTpStr) && !superTpStr.startsWith("java.")){
-						System.err.println(className + " EXTENDS " + superTpStr);
-						System.err.println("EXIT");
-						System.exit(1);
+					//omit java.lang.*, java.* and junit.framework.TestCase
+					if(! ProInfo.javaDotLangClasses.contains(superTpStr) && !superTpStr.startsWith("java.")  && 
+							!superTpStr.equals("TestCase")){
+						
+						throw new Error(className + " EXTENDS " + superTpStr);
 					}
 				}
 			}else{
@@ -134,15 +131,14 @@ public class ProjectVisitor extends ASTVisitor {
 				
 				if(fatherCls != null){
 					currentCls.setFatherCls(fatherCls);
-				}else if(!(fullClsName.startsWith("java") || fullClsName.startsWith("org.xml") || fullClsName.startsWith("junit"))){
-					System.err.println(fullClsName);
-					System.exit(1);
+				}else if(!PackageRepre.isJdkPackage(fullClsName)){
+					throw new Error(fullClsName);
 				}
 				
 			}
 		}
 		
-		System.out.println("INSERT CLS: " + currentCls);
+//		System.out.println("INSERT CLS: " + currentCls);
 		
 		for (Iterator it = node.bodyDeclarations().iterator(); it.hasNext();){
 			

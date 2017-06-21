@@ -8,9 +8,11 @@ import java.util.List;
 public class ClassRepre implements Serializable {
 	private File srcFile;
 	
+	private int startPosition = -1;
+	
 	private PackageRepre pkg;
 	private String name;
-	
+		
 	private ClassRepre fatherCls;
 	private List<ClassRepre> superInterfaces;
 	
@@ -24,19 +26,30 @@ public class ClassRepre implements Serializable {
 	
 	private List<ClassRepre> innerClazzes;
 	
-	public ClassRepre(File srcFile, PackageRepre pkg, String clsName) {
+	public ClassRepre(File srcFile, int startPosition, PackageRepre pkg, String clsName) {
 		super();
 		this.pkg = pkg;
 		this.srcFile = srcFile;
 		this.name = clsName;
+		this.startPosition = startPosition;
 	}
 	
+
 	public File getSrcFile() {
 		return srcFile;
 	}
 	public void setSrcFile(File srcFile) {
 		this.srcFile = srcFile;
 	}
+	
+	public int getStartPosition() {
+		return startPosition;
+	}
+
+	public void setStartPosition(int startPosition) {
+		this.startPosition = startPosition;
+	}
+
 	public PackageRepre getPkg() {
 		return pkg;
 	}

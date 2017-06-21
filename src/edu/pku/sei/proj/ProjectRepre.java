@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class ProjectRepre implements Serializable {
+
+	private static final long serialVersionUID = 9123749754249191830L;
+	
 	private String name;
 	private String srcRoot;
 	private String testRoot;
@@ -54,13 +57,13 @@ public class ProjectRepre implements Serializable {
 
 	public PackageRepre getPackage(String pkgName){
 		
-		assert allPackageMap.containsKey(pkgName);
+		assert allPackageMap.containsKey(pkgName): "ERROR PKG: " + pkgName;
 		
 		return allPackageMap.get(pkgName);
 	}
 	
-	public ClassRepre getOrNewClassRepre(PackageRepre pkg, File srcFile, String clsName){
-		return pkg.getOrNewClassRepre(srcFile, clsName);
+	public ClassRepre getOrNewClassRepre(PackageRepre pkg, File srcFile, int startPosition, String clsName){
+		return pkg.getOrNewClassRepre(srcFile, startPosition, clsName);
 	}
 	
 	public ClassRepre getClassRepre(PackageRepre pkg, String clsName){

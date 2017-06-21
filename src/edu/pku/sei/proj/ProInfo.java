@@ -43,20 +43,17 @@ public class ProInfo implements Serializable  {
 	
 	
 	public static void main(String[] args){
-//		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/main/java/";
-//		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/test/java";
-//		String project = "math_37";
+//		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_12_buggy/src/main/java/";
+//		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_12_buggy/src/test/java";
+//		String project = "math_12";
 		
-		String srcRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/source/";
-		String testRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/tests/";
-		String project = "chart_1";
-//		if(args.length != 3){
-//			System.err.println("ERR ARGS NUM");
-//			return;
-//		}
-//		String project = args[0];
-//		String srcRoot = args[1];
-//		String testRoot = args[2];
+//		String srcRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/source/";
+//		String testRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/tests/";
+//		String project = "chart_1";
+		
+		String srcRoot = "/home/nightwish/workspace/defects4j/src/time/time_1_buggy/src/main/java/";
+		String testRoot = "/home/nightwish/workspace/defects4j/src/time/time_1_buggy/src/test/java/";
+		String project = "time_1";
 		
 		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot);
 		
@@ -77,6 +74,7 @@ public class ProInfo implements Serializable  {
 	public void collectProInfo(){
 		
 		assert srcRoot != null;
+		System.out.println(">>>> PROJECT INFO BEGIN FOR " + proName);
 		
 		File rootFile = new File(srcRoot);
 		this.traverseSrcFolderFirstLoop(rootFile, "");
@@ -195,11 +193,7 @@ public class ProInfo implements Serializable  {
 //				System.out.println(curPkg);
 //				System.out.println(files[i].getName());
 
-				String mainClsName = fileName.substring(0, fileName.length() - 5);
-
-				ClassRepre mainCls = projectRepre.getOrNewClassRepre(pkgRepre, files[i], mainClsName);
-
-				ClsCollectorVisitor visitor = new ClsCollectorVisitor(files[i], projectRepre, pkgRepre, mainCls);
+				ClsCollectorVisitor visitor = new ClsCollectorVisitor(files[i], projectRepre, pkgRepre);
 				
 				cu.accept(visitor);
 				
@@ -242,11 +236,8 @@ public class ProInfo implements Serializable  {
 
 				String mainClsName = fileName.substring(0, fileName.length() - 5);
 
-				ClassRepre mainCls = projectRepre.getClassRepre(pkgRepre, mainClsName);
-
-				assert mainCls != null;
 				
-				ProjectVisitor visitor = new ProjectVisitor(files[i], projectRepre, pkgRepre, mainCls);
+				ProjectVisitor visitor = new ProjectVisitor(files[i], projectRepre, pkgRepre);
 				
 				cu.accept(visitor);
 				

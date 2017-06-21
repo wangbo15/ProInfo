@@ -17,6 +17,10 @@ public class PackageRepre implements Serializable  {
 		return pkgName;
 	}
 	
+	public static boolean isJdkPackage(String pkg){
+		return pkg.startsWith("java") || pkg.startsWith("org.xml") || pkg.contains("junit.");
+	}
+	
 	public void insertClass(String className, ClassRepre classRepre){
 		clazzesMap.put(className, classRepre);
 	}
@@ -28,11 +32,11 @@ public class PackageRepre implements Serializable  {
 		return null;
 	}
 	
-	public ClassRepre getOrNewClassRepre(File srcFile, String className){
+	public ClassRepre getOrNewClassRepre(File srcFile, int startPosition, String className){
 		if(clazzesMap.containsKey(className)){
 			return clazzesMap.get(className);
 		}else{
-			ClassRepre cls = new ClassRepre(srcFile, this, className);
+			ClassRepre cls = new ClassRepre(srcFile, startPosition, this, className);
 			clazzesMap.put(className, cls);
 			return cls;
 		}
