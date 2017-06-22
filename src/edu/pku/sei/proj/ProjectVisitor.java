@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
@@ -16,9 +18,11 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.ParameterizedType;
+import org.eclipse.jdt.core.dom.QualifiedType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 
@@ -78,11 +82,26 @@ public class ProjectVisitor extends ASTVisitor {
 		
 		return super.visit(node);
 	}
-
+	
+	/**
+	 * Omit anonymous class
+	 */
+	@Override
+	public boolean visit(AnonymousClassDeclaration node) {
+		return false;
+	}	
+	@Override
+	public boolean visit(TypeDeclarationStatement node) {
+		return false;
+	}
 
 	@Override
 	public boolean visit(TypeDeclaration node) {
-
+		
+		if(node.getParent() instanceof Block){
+			return false;
+		}
+		
 		String className = ClsCollectorVisitor.typeDeclToClassName(node);
 		
 		ClassRepre currentCls = this.pkgRepre.getClassRepre(className);
@@ -100,9 +119,23 @@ public class ProjectVisitor extends ASTVisitor {
 			superTp = ((ParameterizedType) superTp).getType();
 		}
 
+
 		if (superTp != null) {
+//			if(superTp instanceof )
+			
 			String superTpStr = superTp.toString();
-			//TODO:: differnt type class
+
+			if(superTp instanceof QualifiedType){
+				Type qualifier = ((QualifiedType) superTp).getQualifier();
+				if(qualifier instanceof ParameterizedType){
+					superTpStr = ((ParameterizedType) qualifier).getType().toString() + "." + ((QualifiedType) superTp).getName().getIdentifier();
+				}
+			}
+			
+			if(superTpStr.contains(".") && !PackageRepre.isJdkPackage(superTpStr)){
+				superTpStr = superTpStr.replace(".", "$");
+			}
+			
 			String fullClsName = null;
 			
 			//1. search from imported classes
@@ -120,20 +153,23 @@ public class ProjectVisitor extends ASTVisitor {
 					currentCls.setFatherCls(fatherCls);
 				}else{
 					//omit java.lang.*, java.* and junit.framework.TestCase
-					if(! ProInfo.javaDotLangClasses.contains(superTpStr) && !superTpStr.startsWith("java.")  && !superTpStr.equals("TestCase")){
+					if(! ProInfo.javaDotLangClasses.contains(superTpStr) && !superTpStr.startsWith("java.") 
+							&& !superTpStr.startsWith("junit.") && !superTpStr.equals("TestCase")){
 						
-						//search from the same file
-						int idx = className.lastIndexOf("$");
-						if(idx < 0){
-							throw new Error(className + " EXTENDS " + superTpStr);
+						for(ClassRepre brother : pkgRepre.getClazzesMap().values()){
+							String brotherName = brother.getName();
+							if(brotherName.contains("$")){
+								int idx = brotherName.lastIndexOf("$");
+								brotherName = brotherName.substring(idx + 1);
+								if(brotherName.equals(superTpStr)){
+									fatherCls = brother;
+								}
+							}
 						}
-						String superName = className.substring(0, idx + 1) + superTpStr;
-						
-						fatherCls = pkgRepre.getClassRepre(superName);
 						if(fatherCls != null){
 							currentCls.setFatherCls(fatherCls);
 						}else{
-							throw new Error(className + " EXTENDS " + superTpStr);
+							throw new Error(className + " EXTENDS " + superTpStr + " @ " + file.getName());
 						}
 					}
 				}

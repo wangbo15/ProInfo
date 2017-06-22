@@ -37,22 +37,6 @@ public class JavaFile {
 
 	private final static String __name__ = "@JavaFile ";
 
-	/**
-	 * generate {@code CompilationUnit} from {@code ICompilationUnit}
-	 * 
-	 * @param icu
-	 * @return
-	 */
-	public static CompilationUnit genASTFromICU(ICompilationUnit icu) {
-		ASTParser astParser = ASTParser.newParser(AST.JLS8);
-		Map<?, ?> options = JavaCore.getOptions();
-		JavaCore.setComplianceOptions(JavaCore.VERSION_1_7, options);
-		astParser.setCompilerOptions(options);
-		astParser.setSource(icu);
-		astParser.setKind(ASTParser.K_COMPILATION_UNIT);
-		astParser.setResolveBindings(true);
-		return (CompilationUnit) astParser.createAST(null);
-	}
 
 	/**
 	 * generate {@code CompilationUnit} from source code based on the specific
@@ -62,10 +46,10 @@ public class JavaFile {
 	 * @param type
 	 * @return
 	 */
-	public static ASTNode genASTFromSource(String icu, int type) {
+	public static ASTNode genASTFromSource(String icu, int type, String version) {
 		ASTParser astParser = ASTParser.newParser(AST.JLS8);
 		Map<?, ?> options = JavaCore.getOptions();
-		JavaCore.setComplianceOptions(JavaCore.VERSION_1_7, options);
+		JavaCore.setComplianceOptions(version, options);
 		astParser.setCompilerOptions(options);
 		astParser.setSource(icu.toCharArray());
 		astParser.setKind(type);

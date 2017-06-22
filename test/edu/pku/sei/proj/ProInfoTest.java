@@ -5,18 +5,21 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.junit.Test;
 
 public class ProInfoTest {
+	
 
 	@Test
 	public void test_Chart_1(){
+		final String javaVersion = JavaCore.VERSION_1_7;
 		String srcRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/source";
 		String testRoot = null;
 		String project = "chart_1";
 		
-		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot);
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, javaVersion);
 		proInfo.collectProInfo();
 		ProjectRepre proRe = proInfo.getProjectRepre();
 		
@@ -30,11 +33,12 @@ public class ProInfoTest {
 	
 	@Test
 	public void test_Chart_1_AbstractCategoryItemRenderer() {
+		final String javaVersion = JavaCore.VERSION_1_7;
 		String srcRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/source";
 		String testRoot = null;
 		String project = "chart_1";
 		
-		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot);
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, javaVersion);
 		
 		proInfo.collectProInfo();
 		
@@ -71,11 +75,13 @@ public class ProInfoTest {
 	
 	@Test
 	public void test_Math1_GaussNewtonOptimizer(){
+		final String javaVersion = JavaCore.VERSION_1_7;
+
 		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_1_buggy/src/main/java";
 		String testRoot = null;
 		String project = "math_1";
 		
-		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot);
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, javaVersion);
 		proInfo.collectProInfo();
 		
 		ClassRepre clsRepre = proInfo.getProjectRepre().getPackage("org.apache.commons.math3.fitting.leastsquares").getClassRepre("GaussNewtonOptimizer");

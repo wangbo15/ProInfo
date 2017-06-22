@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
@@ -17,7 +18,8 @@ public class ProInfo implements Serializable  {
 	private String proName;
 	private String srcRoot;
 	private String testRoot;
-
+	private String javaVersion = JavaCore.VERSION_1_7;
+	
 	private ProjectRepre projectRepre;
 	
 	public static Set<String> javaDotLangClasses = new HashSet<>();
@@ -43,27 +45,32 @@ public class ProInfo implements Serializable  {
 	
 	
 	public static void main(String[] args){
-		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_20_buggy/src/main/java/";
-		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_20_buggy/src/test/java";
-		String project = "math_20";
+//		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_20_buggy/src/main/java/";
+//		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_20_buggy/src/test/java";
+//		String project = "math_20";
 		
-//		String srcRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/source/";
-//		String testRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_1_buggy/tests/";
-//		String project = "chart_1";
+//		String srcRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_4_buggy/source/";
+//		String testRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_4_buggy/tests/";
+//		String project = "chart_4";
 		
-//		String srcRoot = "/home/nightwish/workspace/defects4j/src/time/time_1_buggy/src/main/java/";
-//		String testRoot = "/home/nightwish/workspace/defects4j/src/time/time_1_buggy/src/test/java/";
-//		String project = "time_1";
+//		String srcRoot = "/home/nightwish/workspace/defects4j/src/time/time_11_buggy/src/main/java/";
+//		String testRoot = "/home/nightwish/workspace/defects4j/src/time/time_11_buggy/src/test/java/";
+//		String project = "time_11";
+
+		String srcRoot = "/home/nightwish/workspace/defects4j/src/lang/lang_48_buggy/src/java/";
+		String testRoot = "/home/nightwish/workspace/defects4j/src/lang/lang_48_buggy/src/test/";
+		String project = "lang_48";
 		
-		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot);
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, JavaCore.VERSION_1_3);
 		
 		proInfo.collectProInfo();
 	}
 	
-	public ProInfo(String proName, String srcRoot, String testRoot){
+	public ProInfo(String proName, String srcRoot, String testRoot, String javaVersion){
 		this.proName = proName;
 		this.srcRoot = srcRoot;
 		this.testRoot = testRoot;
+		this.javaVersion = javaVersion;
 		this.projectRepre = new ProjectRepre(proName, srcRoot, testRoot);
 	}
 		
@@ -188,7 +195,7 @@ public class ProInfo implements Serializable  {
 				
 			} else if (fileName.endsWith(".java")) {
 				
-				CompilationUnit cu = (CompilationUnit) JavaFile.genASTFromSource(JavaFile.readFileToString(files[i]), ASTParser.K_COMPILATION_UNIT);
+				CompilationUnit cu = (CompilationUnit) JavaFile.genASTFromSource(JavaFile.readFileToString(files[i]), ASTParser.K_COMPILATION_UNIT, javaVersion);
 				
 //				System.out.println(curPkg);
 //				System.out.println(files[i].getName());
@@ -229,7 +236,7 @@ public class ProInfo implements Serializable  {
 				
 			} else if (fileName.endsWith(".java")) {
 				
-				CompilationUnit cu = (CompilationUnit) JavaFile.genASTFromSource(JavaFile.readFileToString(files[i]), ASTParser.K_COMPILATION_UNIT);
+				CompilationUnit cu = (CompilationUnit) JavaFile.genASTFromSource(JavaFile.readFileToString(files[i]), ASTParser.K_COMPILATION_UNIT, javaVersion);
 				
 //				System.out.println(curPkg);
 //				System.out.println(files[i].getName());
