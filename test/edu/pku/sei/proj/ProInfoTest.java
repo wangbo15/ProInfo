@@ -92,7 +92,24 @@ public class ProInfoTest {
 		assertEquals(methods.size(), 1);
 		MethodRepre mtd0 = methods.get(0);
 		assertEquals(mtd0.getParams().size(), 0);
-		
 	}
 
+	@Test
+	public void test_Math_37(){
+		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/main/java";
+		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/test/java";
+		String project = "math_37";
+		
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, null);
+		proInfo.collectProInfo();
+		
+		ProjectRepre proj = proInfo.getProjectRepre();
+		
+//		for(ClassRepre cls : proj.fullNameToClazzesMap.values()){
+//			System.out.println(cls);
+//		}
+		
+		assertFalse(proj.fullNameToClazzesMap.get("org.apache.commons.math.util.FastMath") == null);
+	}
+	
 }

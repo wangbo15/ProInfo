@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClassRepre implements Serializable {
+
+	private static final long serialVersionUID = 160218840478062973L;
+
 	private File srcFile;
 	
 	private int startPosition = -1;

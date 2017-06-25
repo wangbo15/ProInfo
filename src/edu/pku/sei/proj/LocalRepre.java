@@ -1,6 +1,8 @@
 package edu.pku.sei.proj;
 
 public class LocalRepre extends MemoryCell{
+
+	private static final long serialVersionUID = -2617438480883972533L;
 	private MethodRepre mtd;
 	private int flag;
 	public LocalRepre(ClassRepre cls, String name, String type, MethodRepre mtd, int flag) {

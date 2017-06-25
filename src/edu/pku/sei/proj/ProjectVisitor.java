@@ -141,7 +141,19 @@ public class ProjectVisitor extends ASTVisitor {
 			//1. search from imported classes
 			for(String imp : importedClazzes){
 				if(imp.endsWith(superTpStr) && (imp.lastIndexOf(".") + 1 + superTpStr.length() == imp.length())){
-					fullClsName = imp;
+					fullClsName = superTpStr;
+					String paths[] = imp.split("\\.");
+					
+					for(int i = paths.length - 2; i >=0 ; i--){
+						String currentPath = paths[i];
+						//for math3's import org.apache.commons.math3.userguide.ExampleUtils.ExampleFrame;
+						if(Character.isUpperCase(currentPath.charAt(0))){
+							fullClsName = currentPath + "$" + fullClsName;
+						}else{
+							fullClsName = currentPath + "." + fullClsName;
+						}
+					}
+					
 					break;
 				}
 			}
@@ -179,6 +191,9 @@ public class ProjectVisitor extends ASTVisitor {
 				if(fatherCls != null){
 					currentCls.setFatherCls(fatherCls);
 				}else if(!PackageRepre.isJdkPackage(fullClsName)){
+					for(ClassRepre cls : projectRepre.fullNameToClazzesMap.values()){
+						System.out.println(cls);
+					}
 					throw new Error(fullClsName);
 				}
 				

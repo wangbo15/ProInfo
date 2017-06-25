@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PackageRepre implements Serializable  {
+
+	private static final long serialVersionUID = -5884875718554506641L;
+	
 	private String pkgName;
 	private Map<String , ClassRepre> clazzesMap = new HashMap<>();
 	

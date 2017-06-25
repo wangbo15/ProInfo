@@ -4,6 +4,7 @@ import java.lang.reflect.Modifier;
 
 public class FieldRepre extends MemoryCell{
 	
+	private static final long serialVersionUID = 1888940838152654379L;
 	private int flag;
 
 	public FieldRepre(ClassRepre cls, String name, String type, int flag) {

@@ -3,6 +3,8 @@ package edu.pku.sei.proj;
 import java.io.Serializable;
 
 public abstract class MemoryCell implements Serializable  {
+
+	private static final long serialVersionUID = 378902323544518077L;
 	protected ClassRepre cls;
 	protected String name;
 	protected String type;

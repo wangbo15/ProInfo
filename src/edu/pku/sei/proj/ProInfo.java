@@ -15,6 +15,9 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 public class ProInfo implements Serializable  {
+	
+	private static final long serialVersionUID = -7652134852831173670L;
+	
 	private String proName;
 	private String srcRoot;
 	private String testRoot;
@@ -45,9 +48,9 @@ public class ProInfo implements Serializable  {
 	
 	
 	public static void main(String[] args){
-//		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_20_buggy/src/main/java/";
-//		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_20_buggy/src/test/java";
-//		String project = "math_20";
+		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_3_buggy/src/main/java/";
+		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_3_buggy/src/test/java";
+		String project = "math_3";
 		
 //		String srcRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_4_buggy/source/";
 //		String testRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_4_buggy/tests/";
@@ -57,12 +60,13 @@ public class ProInfo implements Serializable  {
 //		String testRoot = "/home/nightwish/workspace/defects4j/src/time/time_11_buggy/src/test/java/";
 //		String project = "time_11";
 
-		String srcRoot = "/home/nightwish/workspace/defects4j/src/lang/lang_48_buggy/src/java/";
-		String testRoot = "/home/nightwish/workspace/defects4j/src/lang/lang_48_buggy/src/test/";
-		String project = "lang_48";
+//		String srcRoot = "/home/nightwish/workspace/defects4j/src/lang/lang_48_buggy/src/java/";
+//		String testRoot = "/home/nightwish/workspace/defects4j/src/lang/lang_48_buggy/src/test/";
+//		String project = "lang_48";
 		
-		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, JavaCore.VERSION_1_3);
+//		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, JavaCore.VERSION_1_3);
 		
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, null);
 		proInfo.collectProInfo();
 	}
 	
@@ -70,7 +74,9 @@ public class ProInfo implements Serializable  {
 		this.proName = proName;
 		this.srcRoot = srcRoot;
 		this.testRoot = testRoot;
-		this.javaVersion = javaVersion;
+		if(javaVersion != null && javaVersion.length() > 0){
+			this.javaVersion = javaVersion;
+		}
 		this.projectRepre = new ProjectRepre(proName, srcRoot, testRoot);
 	}
 		
@@ -96,6 +102,10 @@ public class ProInfo implements Serializable  {
 		this.cleanUp();
 		this.mergeUntilFix();
 		System.out.println(">>>> PROJECT INFO FINISHED FOR " + proName);
+		
+//		for (ClassRepre cls : projectRepre.fullNameToClazzesMap.values()) {
+//			System.out.println(cls);
+//		}
 	}
 	
 	private void cleanUp(){
@@ -253,4 +263,13 @@ public class ProInfo implements Serializable  {
 			}
 		}
 	}
+
+
+	@Override
+	public String toString() {
+		return "ProInfo@" + this.hashCode() + ": " + proName + ", srcRoot=" + srcRoot + ", testRoot=" + testRoot + ", javaVersion="
+				+ javaVersion;
+	}
+	
+	
 }
