@@ -112,4 +112,26 @@ public class ProInfoTest {
 		assertFalse(proj.fullNameToClazzesMap.get("org.apache.commons.math.util.FastMath") == null);
 	}
 	
+	@Test
+	public void test_Math_37_DfpDec(){
+		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/main/java";
+		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_37_buggy/src/test/java";
+		String project = "math_37";
+		
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, null);
+		proInfo.collectProInfo();
+		
+		ProjectRepre proj = proInfo.getProjectRepre();
+		
+//		for(ClassRepre cls : proj.fullNameToClazzesMap.values()){
+//			System.out.println(cls);
+//		}
+		
+		ClassRepre cls = proj.fullNameToClazzesMap.get("org.apache.commons.math.dfp.DfpDec");
+		
+		
+		assertTrue(cls.getFieldRepreByName("mant") != null);
+		System.out.println(cls.getFieldRepreByName("mant"));
+		
+	}
 }

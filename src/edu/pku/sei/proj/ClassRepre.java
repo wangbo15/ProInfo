@@ -3,7 +3,9 @@ package edu.pku.sei.proj;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ClassRepre implements Serializable {
 
@@ -24,10 +26,11 @@ public class ClassRepre implements Serializable {
 	private int flag = -1;
 	
 	private List<FieldRepre> fields = new ArrayList<>();
+		
 	private List<MethodRepre> methods = new ArrayList<>();
 	
 	
-	private List<ClassRepre> innerClazzes;
+	private ClassRepre containerCls;
 	
 	public ClassRepre(File srcFile, int startPosition, PackageRepre pkg, String clsName) {
 		super();
@@ -37,7 +40,6 @@ public class ClassRepre implements Serializable {
 		this.startPosition = startPosition;
 	}
 	
-
 	public File getSrcFile() {
 		return srcFile;
 	}
@@ -71,6 +73,17 @@ public class ClassRepre implements Serializable {
 	public void setFatherCls(ClassRepre fatherCls) {
 		this.fatherCls = fatherCls;
 	}
+	
+	public ClassRepre getContainerCls() {
+		return containerCls;
+	}
+
+
+	public void setContainerCls(ClassRepre containerCls) {
+		this.containerCls = containerCls;
+	}
+
+
 	public List<ClassRepre> getSuperInterfaces() {
 		return superInterfaces;
 	}
@@ -108,14 +121,6 @@ public class ClassRepre implements Serializable {
 		return methods;
 	}
 
-	public List<ClassRepre> getInnerClazzes() {
-		return innerClazzes;
-	}
-
-	public void setInnerClazzes(List<ClassRepre> innerClazzes) {
-		this.innerClazzes = innerClazzes;
-	}
-	
 	public List<MethodRepre> getMethodRepreByName(String name){
 		List<MethodRepre> res = new ArrayList<>();
 		for(MethodRepre mtd : this.methods){

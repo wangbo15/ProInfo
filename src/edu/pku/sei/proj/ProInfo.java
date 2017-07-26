@@ -29,10 +29,13 @@ public class ProInfo implements Serializable  {
 	
 	static{
 		try {
-			String path = Class.class.getClass().getResource("/").getPath();
-			File root = new File(path);
-			root = root.getParentFile();
-			FileReader fr = new FileReader(root.getAbsolutePath() + "/java_lang_clazzes.txt");
+//			String path = Class.class.getClass().getResource("/").getPath();
+//			File root = new File(path);
+//			root = root.getParentFile();
+			
+			//TODO: 
+			String path = "/home/nightwish/workspace/eclipse/ProInfo";
+			FileReader fr = new FileReader(path + "/java_lang_clazzes.txt");
 			BufferedReader br = new BufferedReader(fr);
 			String curLine = null;
 			while((curLine = br.readLine()) != null){
@@ -270,6 +273,5 @@ public class ProInfo implements Serializable  {
 		return "ProInfo@" + this.hashCode() + ": " + proName + ", srcRoot=" + srcRoot + ", testRoot=" + testRoot + ", javaVersion="
 				+ javaVersion;
 	}
-	
 	
 }

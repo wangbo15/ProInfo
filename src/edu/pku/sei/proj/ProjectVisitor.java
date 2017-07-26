@@ -232,6 +232,11 @@ public class ProjectVisitor extends ASTVisitor {
 				
 				FieldRepre field = new FieldRepre(clsRepre, frag.getName().toString(), node.getType().toString(), flag);
 				clsRepre.insertFieldRepre(field);
+				
+				if(frag.getInitializer() != null){
+					String init = frag.getInitializer().toString();
+					field.setIninalValue(init);
+				}
 //				System.out.println("INSERT FLD: " + field);
 
 			}

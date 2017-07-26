@@ -74,9 +74,7 @@ SecurityException
 StringIndexOutOfBoundsException
 TypeNotPresentException
 UnsupportedOperationException
-
 Errors
-
 AbstractMethodError
 AssertionError
 BootstrapMethodError
@@ -100,11 +98,8 @@ UnsatisfiedLinkError
 UnsupportedClassVersionError
 VerifyError
 VirtualMachineError
-
 Annotation Types
-
 Deprecated
 Override
 SafeVarargs
 SuppressWarnings
-

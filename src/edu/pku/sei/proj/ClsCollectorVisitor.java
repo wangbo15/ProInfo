@@ -42,6 +42,27 @@ public class ClsCollectorVisitor extends ASTVisitor {
 		return res;
 	}
 	
+	private void setContainterCls(ClassRepre currentCls, TypeDeclaration node){
+		ASTNode curNode = node;
+		while(true){
+			ASTNode father = curNode.getParent();
+			if(father instanceof TypeDeclaration){
+				String className = typeDeclToClassName((TypeDeclaration) father);
+				ClassRepre container = this.pkgRepre.getClassRepre(className);
+				assert container != null;
+				
+				if(currentCls.getContainerCls() != null){
+					curNode = father;
+					continue;
+				}
+				currentCls.setContainerCls(container);
+				curNode = father;
+			}else{
+				break;
+			}
+		}
+	}
+	
 	protected static String typeDeclToClassName(TypeDeclaration node){
 		
 		String className = "";
@@ -79,6 +100,8 @@ public class ClsCollectorVisitor extends ASTVisitor {
 		ClassRepre currentCls = this.pkgRepre.getOrNewClassRepre(file, node.getStartPosition(), className);
 
 		currentCls.setFlag(node.getModifiers());
+		
+		setContainterCls(currentCls, node);
 		
 		String fullName = pkgRepre.getPkgName() + "." + className;
 		projectRepre.fullNameToClazzesMap.put(fullName, currentCls);
