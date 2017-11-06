@@ -51,9 +51,9 @@ public class ProInfo implements Serializable  {
 	
 	
 	public static void main(String[] args){
-		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_3_buggy/src/main/java/";
-		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_3_buggy/src/test/java";
-		String project = "math_3";
+		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_84_buggy/src/main/java";
+		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_84_buggy/src/test/java";
+		String project = "math_84";
 		
 //		String srcRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_4_buggy/source/";
 //		String testRoot = "/home/nightwish/workspace/defects4j/src/chart/chart_4_buggy/tests/";

@@ -69,9 +69,20 @@ public class ClsCollectorVisitor extends ASTVisitor {
 		ASTNode father = null;
 		ASTNode curNode = node;
 		while((father  = curNode.getParent()) != null){
-			TypeDeclaration curNodeTD = (TypeDeclaration) curNode;
-			className = curNodeTD.getName().getIdentifier() + "$" + className;
+			if(curNode instanceof TypeDeclaration){
+				TypeDeclaration curNodeTD = (TypeDeclaration) curNode;
+				className = curNodeTD.getName().getIdentifier() + "$" + className;
+			}else if(curNode instanceof AnnotationTypeDeclaration){
+				AnnotationTypeDeclaration curNodeTD = (AnnotationTypeDeclaration) curNode;
+				className = curNodeTD.getName().getIdentifier() + "$" + className;
+			}else if(curNode instanceof EnumDeclaration){
+				EnumDeclaration curNodeTD = (EnumDeclaration) curNode;
+				className = curNodeTD.getName().getIdentifier() + "$" + className;
+			}else {
+				throw new Error(curNode.getClass().getName());
+			}
 			curNode = father;
+			
 		}
 		
 		return className.substring(0, className.length() - 1);
