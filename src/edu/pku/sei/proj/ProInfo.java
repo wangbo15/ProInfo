@@ -151,6 +151,8 @@ public class ProInfo implements Serializable  {
 		travereForPackageInfo(srcFileList);
 		travereForClazzInfo(srcFileList);
 		travereForInnerClazzInfo(srcFileList);
+		this.cleanUp();
+		this.mergeUntilFix();
 		
 		System.out.println(">>>> PROJECT INFO FINISHED FOR " + proName);
 	}
