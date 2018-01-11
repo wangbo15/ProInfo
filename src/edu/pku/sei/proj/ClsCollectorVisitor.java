@@ -20,7 +20,6 @@ public class ClsCollectorVisitor extends ASTVisitor {
 	private PackageRepre pkgRepre;
 	
 	public ClsCollectorVisitor(File file, ProjectRepre projectRepre, PackageRepre pkgRepre) {
-		super();
 		this.file = file;
 		this.projectRepre = projectRepre;
 		this.pkgRepre = pkgRepre;
@@ -82,7 +81,6 @@ public class ClsCollectorVisitor extends ASTVisitor {
 				throw new Error(curNode.getClass().getName());
 			}
 			curNode = father;
-			
 		}
 		
 		return className.substring(0, className.length() - 1);
@@ -95,15 +93,14 @@ public class ClsCollectorVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration node) {
-		
 		if(node.getParent() instanceof Block){
 			return false;
 		}
 		
 		String className = typeDeclToClassName(node);
 		
-		String fileName = file.getName();
-		String mainClsName = fileName.substring(0, fileName.length() - 5);
+//		String fileName = file.getName();
+//		String mainClsName = fileName.substring(0, fileName.length() - 5);
 		
 //		System.out.println(">>>>>>>>" + file.getName() + "  " + node.getName());
 //		System.out.println("\t\t\t" +  className);

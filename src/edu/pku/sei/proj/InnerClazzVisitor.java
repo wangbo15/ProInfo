@@ -26,7 +26,7 @@ import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 
-public class ProjectVisitor extends ASTVisitor {
+public class InnerClazzVisitor extends ASTVisitor {
 	
 	private File file;
 	private ProjectRepre projectRepre;
@@ -36,7 +36,7 @@ public class ProjectVisitor extends ASTVisitor {
 	private Set<String> importedClazzes = new HashSet<>();
 
 	
-	public ProjectVisitor(File file, ProjectRepre projectRepre, PackageRepre pkgRepre) {
+	public InnerClazzVisitor(File file, ProjectRepre projectRepre, PackageRepre pkgRepre) {
 		this.file = file;
 		this.projectRepre = projectRepre;
 		this.pkgRepre = pkgRepre;
@@ -57,11 +57,10 @@ public class ProjectVisitor extends ASTVisitor {
 				
 				String loadAllPkg = impDecl.getName().toString();
 				
-				if(PackageRepre.isJdkPackage(loadAllPkg)){
+				PackageRepre loadAll = projectRepre.getPackage(loadAllPkg);
+				if(loadAll == null) {//package of other project
 					continue;
 				}
-				
-				PackageRepre loadAll = projectRepre.getPackage(loadAllPkg);
 				
 				for(ClassRepre cls : loadAll.getClazzesMap().values()){
 					int flag = cls.getFlag();
@@ -73,11 +72,12 @@ public class ProjectVisitor extends ASTVisitor {
 //				System.err.println(loadAllPkg);
 				
 			}else{
-				Name nm = impDecl.getName();
-				importedClazzes.add(nm.toString());
+				String imported = impDecl.getName().toString();
+				if(projectRepre.fullNameToClazzesMap.containsKey(imported)) {
+					importedClazzes.add(imported);
+				}
 			}
 		}
-		
 		
 		return super.visit(node);
 	}
@@ -88,12 +88,94 @@ public class ProjectVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(AnonymousClassDeclaration node) {
 		return false;
-	}	
+	}
 	@Override
 	public boolean visit(TypeDeclarationStatement node) {
 		return false;
 	}
 
+	private String getImportedFatherClassName(String imorted) {
+		if(imorted.contains(".") == false) {
+			return null;
+		}
+		String paths[] = imorted.split("\\.");
+		String fullClsName = null;
+		for(int i = paths.length - 2; i >=0 ; i--){
+			String currentPath = paths[i];
+			//for math3's import org.apache.commons.math3.userguide.ExampleUtils.ExampleFrame;
+			if(Character.isUpperCase(currentPath.charAt(0))){
+				fullClsName = currentPath + "$" + fullClsName;
+			}else{
+				fullClsName = currentPath + "." + fullClsName;
+			}
+		}
+		return fullClsName;
+	}
+	
+	private void processExtends(TypeDeclaration node, ClassRepre currentCls) {
+		Type superTp = 	node.getSuperclassType();
+		
+		if(superTp == null) {
+			return;
+		}
+		
+		if(superTp instanceof ParameterizedType){
+			superTp = ((ParameterizedType) superTp).getType();
+		}
+		
+		String superTpStr = superTp.toString();
+
+		if(superTp instanceof QualifiedType){
+			Type qualifier = ((QualifiedType) superTp).getQualifier();
+			if(qualifier instanceof ParameterizedType){
+				superTpStr = ((ParameterizedType) qualifier).getType().toString() + "." + ((QualifiedType) superTp).getName().getIdentifier();
+			}
+		}
+		
+		if(superTpStr.contains(".")){
+			superTpStr = superTpStr.replace(".", "$");
+		}
+		
+		String fullClsName = null;
+		//1. search from imported classes
+		for(String imp : importedClazzes){
+			if(imp.endsWith(superTpStr) && (imp.lastIndexOf(".") + 1 + superTpStr.length() == imp.length())){
+				fullClsName = getImportedFatherClassName(imp);
+				if(fullClsName != null) {
+					break;
+				}
+			}
+		}
+		//2. if not found, serach from the same package
+		if(fullClsName == null){
+			ClassRepre fatherCls = pkgRepre.getClassRepre(superTpStr);
+			
+			if(fatherCls != null){
+				currentCls.setFatherCls(fatherCls);
+			}else{
+				for(ClassRepre brother : pkgRepre.getClazzesMap().values()){
+					String brotherName = brother.getName();
+					if(brotherName.contains("$")){
+						int idx = brotherName.lastIndexOf("$");
+						brotherName = brotherName.substring(idx + 1);
+						if(brotherName.equals(superTpStr)){
+							fatherCls = brother;
+						}
+					}
+				}
+				if(fatherCls != null){
+					currentCls.setFatherCls(fatherCls);
+				}
+			}
+		}else{
+			ClassRepre fatherCls = projectRepre.fullNameToClazzesMap.get(fullClsName);
+			
+			if(fatherCls != null){
+				currentCls.setFatherCls(fatherCls);
+			}
+		}
+	}
+	
 	@Override
 	public boolean visit(TypeDeclaration node) {
 		
@@ -112,97 +194,11 @@ public class ProjectVisitor extends ASTVisitor {
 		currentCls.setFlag(flag);
 		currentCls.setInterface(node.isInterface());
 		
-		Type superTp = 	node.getSuperclassType();
-		
-		if(superTp instanceof ParameterizedType){
-			superTp = ((ParameterizedType) superTp).getType();
-		}
-
-
-		if (superTp != null) {
-//			if(superTp instanceof )
-			
-			String superTpStr = superTp.toString();
-
-			if(superTp instanceof QualifiedType){
-				Type qualifier = ((QualifiedType) superTp).getQualifier();
-				if(qualifier instanceof ParameterizedType){
-					superTpStr = ((ParameterizedType) qualifier).getType().toString() + "." + ((QualifiedType) superTp).getName().getIdentifier();
-				}
-			}
-			
-			if(superTpStr.contains(".") && !PackageRepre.isJdkPackage(superTpStr)){
-				superTpStr = superTpStr.replace(".", "$");
-			}
-			
-			String fullClsName = null;
-			
-			//1. search from imported classes
-			for(String imp : importedClazzes){
-				if(imp.endsWith(superTpStr) && (imp.lastIndexOf(".") + 1 + superTpStr.length() == imp.length())){
-					fullClsName = superTpStr;
-					String paths[] = imp.split("\\.");
-					
-					for(int i = paths.length - 2; i >=0 ; i--){
-						String currentPath = paths[i];
-						//for math3's import org.apache.commons.math3.userguide.ExampleUtils.ExampleFrame;
-						if(Character.isUpperCase(currentPath.charAt(0))){
-							fullClsName = currentPath + "$" + fullClsName;
-						}else{
-							fullClsName = currentPath + "." + fullClsName;
-						}
-					}
-					
-					break;
-				}
-			}
-			//2. if not found, serach from the same package
-			if(fullClsName == null){
-				ClassRepre fatherCls = pkgRepre.getClassRepre(superTpStr);
-								
-				if(fatherCls != null){
-					currentCls.setFatherCls(fatherCls);
-				}else{
-					//omit java.lang.*, java.* and junit.framework.TestCase
-					if(! ProInfo.javaDotLangClasses.contains(superTpStr) && !superTpStr.startsWith("java.") 
-							&& !superTpStr.startsWith("junit.") && !superTpStr.equals("TestCase")){
-						
-						for(ClassRepre brother : pkgRepre.getClazzesMap().values()){
-							String brotherName = brother.getName();
-							if(brotherName.contains("$")){
-								int idx = brotherName.lastIndexOf("$");
-								brotherName = brotherName.substring(idx + 1);
-								if(brotherName.equals(superTpStr)){
-									fatherCls = brother;
-								}
-							}
-						}
-						if(fatherCls != null){
-							currentCls.setFatherCls(fatherCls);
-						}else{
-							//throw new Error(className + " EXTENDS " + superTpStr + " @ " + file.getName());
-						}
-					}
-				}
-			}else{
-				ClassRepre fatherCls = projectRepre.fullNameToClazzesMap.get(fullClsName);
-				
-				if(fatherCls != null){
-					currentCls.setFatherCls(fatherCls);
-				}else if(!PackageRepre.isJdkPackage(fullClsName)){
-					for(ClassRepre cls : projectRepre.fullNameToClazzesMap.values()){
-						System.out.println(cls);
-					}
-					throw new Error(fullClsName);
-				}
-				
-			}
-		}
+		processExtends(node, currentCls);
 		
 //		System.out.println("INSERT CLS: " + currentCls);
 		
 		for (Iterator it = node.bodyDeclarations().iterator(); it.hasNext();){
-			
 			ASTNode body = (ASTNode) it.next();
 			if(body instanceof FieldDeclaration || body instanceof MethodDeclaration){
 				FieldOrMethodVisitor fldVisitor = new FieldOrMethodVisitor(currentCls);

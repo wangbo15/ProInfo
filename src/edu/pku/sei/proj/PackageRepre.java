@@ -21,7 +21,7 @@ public class PackageRepre implements Serializable  {
 	}
 	
 	public static boolean isJdkPackage(String pkg){
-		return pkg.startsWith("java") || pkg.startsWith("org.xml") || pkg.contains("junit.");
+		return pkg.startsWith("java") || pkg.startsWith("org.xml") || pkg.contains("junit.") || pkg.startsWith("com.sun.");
 	}
 	
 	public void insertClass(String className, ClassRepre classRepre){

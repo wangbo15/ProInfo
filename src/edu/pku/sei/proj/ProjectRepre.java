@@ -22,23 +22,23 @@ public class ProjectRepre implements Serializable {
 		super();
 		this.name = name;
 		this.srcRoot = srcRoot;
-		this.testRoot = testRoot;
+		if(testRoot != null) {
+			this.testRoot = testRoot;
+		}
 	}
 	
 	public String getName() {
+		assert name != null;
 		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
 	}
 	
 	public String getSrcRoot() {
+		assert srcRoot != null;
 		return srcRoot;
 	}
-	public void setSrcRoot(String srcRoot) {
-		this.srcRoot = srcRoot;
-	}
+	
 	public String getTestRoot() {
+		assert testRoot != null;
 		return testRoot;
 	}
 	public void setTestRoot(String testRoot) {
@@ -56,9 +56,9 @@ public class ProjectRepre implements Serializable {
 	}
 
 	public PackageRepre getPackage(String pkgName){
-		
-		assert allPackageMap.containsKey(pkgName): "ERROR PKG: " + pkgName;
-		
+		if(allPackageMap.containsKey(pkgName) == false) {
+			return null;
+		}
 		return allPackageMap.get(pkgName);
 	}
 	

@@ -9,7 +9,8 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.junit.Test;
 
-public class ProInfoTest {
+public class ProInfo2Test {
+	
 
 	@Test
 	public void test_Chart_1(){
@@ -19,7 +20,7 @@ public class ProInfoTest {
 		String project = "chart_1";
 		
 		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, javaVersion);
-		proInfo.collectProInfo();
+		proInfo.collectProInfo2();
 		ProjectRepre proRe = proInfo.getProjectRepre();
 		
 		//chart-1 has 40 packages
@@ -39,7 +40,7 @@ public class ProInfoTest {
 		
 		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, javaVersion);
 		
-		proInfo.collectProInfo();
+		proInfo.collectProInfo2();
 		
 		ClassRepre clsRepre = proInfo.getProjectRepre().getPackage("org.jfree.chart.renderer.category").getClassRepre("AbstractCategoryItemRenderer");
 		
@@ -81,7 +82,7 @@ public class ProInfoTest {
 		String project = "math_1";
 		
 		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, javaVersion);
-		proInfo.collectProInfo();
+		proInfo.collectProInfo2();
 		
 		ClassRepre clsRepre = proInfo.getProjectRepre().getPackage("org.apache.commons.math3.fitting.leastsquares").getClassRepre("GaussNewtonOptimizer");
 		
@@ -100,7 +101,7 @@ public class ProInfoTest {
 		String project = "math_37";
 		
 		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, null);
-		proInfo.collectProInfo();
+		proInfo.collectProInfo2();
 		
 		ProjectRepre proj = proInfo.getProjectRepre();
 		
@@ -118,7 +119,7 @@ public class ProInfoTest {
 		String project = "math_37";
 		
 		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, null);
-		proInfo.collectProInfo();
+		proInfo.collectProInfo2();
 		
 		ProjectRepre proj = proInfo.getProjectRepre();
 		
@@ -132,4 +133,41 @@ public class ProInfoTest {
 		System.out.println(cls.getFieldRepreByName("mant"));
 		
 	}
+	
+	@Test
+	public void test_JSci(){
+		String srcRoot = "/home/nightwish/workspace/gitrepos/math_relative/JSci";
+		String testRoot = null;
+		String project = "JSci";
+		
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, null);
+		proInfo.collectProInfo2();
+		
+		assertFalse(proInfo.getProjectRepre().allPackageMap.isEmpty());
+		
+		assertNotNull(proInfo.getProjectRepre().fullNameToClazzesMap.get("JSci.astro.telescope.LX200DebugServer"));
+		
+		for (ClassRepre cls : proInfo.getProjectRepre().fullNameToClazzesMap.values()) {
+			System.out.println(cls);
+		}
+	}
+	
+	@Test
+	public void test_JDK7_Math(){
+		String srcRoot = "/home/nightwish/workspace/gitrepos/math_relative/jdk7_math";
+		String testRoot = null;
+		String project = "jdk7_math";
+		
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, null);
+		proInfo.collectProInfo2();
+		
+		assertFalse(proInfo.getProjectRepre().allPackageMap.isEmpty());
+		
+		for (ClassRepre cls : proInfo.getProjectRepre().fullNameToClazzesMap.values()) {
+			System.out.println(cls);
+		}
+		
+		assertNotNull(proInfo.getProjectRepre().fullNameToClazzesMap.get("java.lang.String"));
+	}
+	
 }

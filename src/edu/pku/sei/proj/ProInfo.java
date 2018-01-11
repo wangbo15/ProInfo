@@ -7,7 +7,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.core.JavaCore;
@@ -24,6 +28,9 @@ public class ProInfo implements Serializable  {
 	private String javaVersion = JavaCore.VERSION_1_7;
 	
 	private ProjectRepre projectRepre;
+	
+	private transient Map<File, CompilationUnit> fileToCuBuffer = new HashMap<>();
+	private transient Map<File, PackageRepre> fileToPkgRepBuffer = new HashMap<>();
 	
 	public static Set<String> javaDotLangClasses = new HashSet<>();
 	
@@ -78,6 +85,9 @@ public class ProInfo implements Serializable  {
 	
 	public ProInfo(String proName, String srcRoot, String testRoot, String javaVersion){
 		this.proName = proName;
+		
+		assert srcRoot != null && new File(srcRoot).exists();
+		
 		this.srcRoot = srcRoot;
 		this.testRoot = testRoot;
 		if(javaVersion != null && javaVersion.length() > 0){
@@ -89,13 +99,18 @@ public class ProInfo implements Serializable  {
 	public ProjectRepre getProjectRepre() {
 		return projectRepre;
 	}
-
+	
+    /**
+     * collect the project-info under <code>srcRoot</code>
+     *
+     * @deprecated use {@link edu.pku.sei.proj.ProInfo#collectProInfo2()}
+     */
+	@Deprecated
 	public void collectProInfo(){
-		
-		assert srcRoot != null;
 		System.out.println(">>>> PROJECT INFO BEGIN FOR " + proName);
 		
 		File rootFile = new File(srcRoot);
+		
 		this.traverseSrcFolderFirstLoop(rootFile, "");
 		this.traverseSrcFolderSecondLoop(rootFile, "");
 		
@@ -114,9 +129,70 @@ public class ProInfo implements Serializable  {
 //		}
 	}
 	
+	public void collectProInfo2() {
+		assert srcRoot != null;
+		System.out.println(">>>> PROJECT INFO BEGIN FOR " + proName);
+		
+		File rootFile = new File(srcRoot);
+		
+		List<File> srcFileList = new ArrayList<File>(128);
+		getFileList(rootFile, srcFileList);
+		travereForPackageInfo(srcFileList);
+		travereForClazzInfo(srcFileList);
+		travereForInnerClazzInfo(srcFileList);
+		
+		System.out.println(">>>> PROJECT INFO FINISHED FOR " + proName);
+	}
+	
+	private void travereForPackageInfo(List<File> srcFileList) {
+		for(File f : srcFileList) {
+			CompilationUnit cu = (CompilationUnit) JavaFile.genASTFromSourceWithType(
+					JavaFile.readFileToString(f),
+					ASTParser.K_COMPILATION_UNIT, 
+					javaVersion, 
+					srcRoot, 
+					f.getAbsolutePath());
+			
+			assert fileToCuBuffer.containsKey(f) == false;
+			fileToCuBuffer.put(f, cu);
+			
+			PkgCollectorVisitor pkgVisitor = new PkgCollectorVisitor();
+			cu.accept(pkgVisitor);
+			String currPkg = pkgVisitor.getCurrentPkg();
+			PackageRepre pkgRep = projectRepre.getOrNewPackage(currPkg);
+			
+			assert fileToPkgRepBuffer.containsKey(f) == false;
+			fileToPkgRepBuffer.put(f, pkgRep);
+		}
+	}
+	
+	private void travereForClazzInfo(List<File> srcFileList) {
+		for(File f : srcFileList) {
+			assert fileToCuBuffer.containsKey(f);
+			CompilationUnit cu = fileToCuBuffer.get(f);
+			
+			assert fileToPkgRepBuffer.containsKey(f);
+			PackageRepre pkgRep = fileToPkgRepBuffer.get(f);
+			ClsCollectorVisitor visitor = new ClsCollectorVisitor(f, projectRepre, pkgRep);
+			cu.accept(visitor);
+		}
+	}
+	
+	private void travereForInnerClazzInfo(List<File> srcFileList) {
+		for(File f : srcFileList) {
+			assert fileToCuBuffer.containsKey(f);
+			CompilationUnit cu = fileToCuBuffer.get(f);
+			
+			assert fileToPkgRepBuffer.containsKey(f);
+			PackageRepre pkgRep = fileToPkgRepBuffer.get(f);
+			InnerClazzVisitor visitor = new InnerClazzVisitor(f, projectRepre, pkgRep);
+			cu.accept(visitor);
+		}
+	}
+	
+	
 	private void cleanUp(){
 		projectRepre.removeEmptyPkgs();
-
 	}
 	
 	private void mergeUntilFix(){
@@ -187,6 +263,7 @@ public class ProInfo implements Serializable  {
 		return changed;
 	}
 	
+	@Deprecated
 	private void traverseSrcFolderFirstLoop(File root, String curPkg){
 		File[] files = root.listFiles();
 		
@@ -226,6 +303,7 @@ public class ProInfo implements Serializable  {
 		}
 	}
 	
+	@Deprecated
 	private void traverseSrcFolderSecondLoop(File root, String curPkg){
 		File[] files = root.listFiles();
 		
@@ -270,6 +348,32 @@ public class ProInfo implements Serializable  {
 		}
 	}
 
+	private static List<File> getFileList(File root, List<File> filelist) {
+		if(root == null || !root.exists() || !root.isDirectory()){
+			return filelist;
+		}
+		
+		assert root.isDirectory();
+		
+		File[] files = root.listFiles();
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				String fileName = files[i].getName();
+				if (files[i].isDirectory()) {
+					getFileList(files[i], filelist);
+				} else if (fileName.endsWith(".java")) {
+					if(fileName.equals("package-info.java")) {
+						continue;
+					}
+					
+					filelist.add(files[i]);
+				} else {
+					continue;
+				}
+			}
+		}
+		return filelist;
+	}
 
 	@Override
 	public String toString() {

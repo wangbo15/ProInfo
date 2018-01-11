@@ -57,6 +57,26 @@ public class JavaFile {
 		return astParser.createAST(null);
 	}
 
+	public static ASTNode genASTFromSourceWithType(String icu, int type, String version, String srcRoot, String cuName) {
+		ASTParser astParser = ASTParser.newParser(AST.JLS8);
+		Map<?, ?> options = JavaCore.getOptions();
+		JavaCore.setComplianceOptions(version, options);
+		astParser.setCompilerOptions(options);
+		astParser.setSource(icu.toCharArray());
+		astParser.setKind(type);
+		astParser.setResolveBindings(true);
+		astParser.setEnvironment(getClassPath(), new String[] {srcRoot}, null, true);
+		astParser.setUnitName(cuName);
+		astParser.setBindingsRecovery(true);
+		return astParser.createAST(null);
+	}
+	
+	private static String[] getClassPath() {
+		String property = System.getProperty("java.class.path", ".");
+		return property.split(File.pathSeparator);
+	}
+
+	
 	/**
 	 * write {@code string} into file with mode as "not append"
 	 * 
