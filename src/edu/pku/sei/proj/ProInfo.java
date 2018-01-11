@@ -137,6 +137,17 @@ public class ProInfo implements Serializable  {
 		
 		List<File> srcFileList = new ArrayList<File>(128);
 		getFileList(rootFile, srcFileList);
+		
+		if(testRoot != null){
+			File testRootFile = new File(testRoot);
+			assert testRootFile.exists();
+			
+			List<File> testFileList = new ArrayList<File>(128);
+			getFileList(testRootFile, testFileList);
+			
+			srcFileList.addAll(testFileList);
+		}
+		
 		travereForPackageInfo(srcFileList);
 		travereForClazzInfo(srcFileList);
 		travereForInnerClazzInfo(srcFileList);

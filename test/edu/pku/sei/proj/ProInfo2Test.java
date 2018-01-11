@@ -135,6 +135,27 @@ public class ProInfo2Test {
 	}
 	
 	@Test
+	public void test_Math_75(){
+		String srcRoot = "/home/nightwish/workspace/defects4j/src/math/math_75_buggy/src/main/java";
+		String testRoot = "/home/nightwish/workspace/defects4j/src/math/math_75_buggy/src/test/java";
+		String project = "math_75";
+		
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, null);
+		proInfo.collectProInfo2();
+		
+		ProjectRepre proj = proInfo.getProjectRepre();
+		
+//		for(ClassRepre cls : proj.fullNameToClazzesMap.values()){
+//			System.out.println(cls);
+//		}
+		
+		ClassRepre cls = proj.fullNameToClazzesMap.get("org.apache.commons.math.stat.descriptive.ListUnivariateImpl");
+		assertNotNull(cls);
+				
+	}
+	
+	
+	@Test
 	public void test_JSci(){
 		String srcRoot = "/home/nightwish/workspace/gitrepos/math_relative/JSci";
 		String testRoot = null;
