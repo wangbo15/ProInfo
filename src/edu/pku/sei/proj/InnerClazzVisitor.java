@@ -27,7 +27,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 
 public class InnerClazzVisitor extends ASTVisitor {
-	
+
 	private File file;
 	private ProjectRepre projectRepre;
 	private PackageRepre pkgRepre;
@@ -225,7 +225,12 @@ public class InnerClazzVisitor extends ASTVisitor {
 			for (Iterator it = node.fragments().iterator();it.hasNext();){
 				VariableDeclarationFragment frag = (VariableDeclarationFragment) it.next();
 				
-				FieldRepre field = new FieldRepre(clsRepre, frag.getName().toString(), node.getType().toString(), flag);
+				String fullTp = tpStr;
+				for(int d = 0; d < frag.getExtraDimensions(); d++) {
+					fullTp = fullTp + "[]";
+				}
+				
+				FieldRepre field = new FieldRepre(clsRepre, frag.getName().toString(), fullTp, flag);
 				clsRepre.insertFieldRepre(field);
 				
 				if(frag.getInitializer() != null){

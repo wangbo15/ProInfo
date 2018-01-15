@@ -191,4 +191,28 @@ public class ProInfo2Test {
 		assertNotNull(proInfo.getProjectRepre().fullNameToClazzesMap.get("java.lang.String"));
 	}
 	
+	@Test
+	public void test_JDK7_Time(){
+		String srcRoot = "/home/nightwish/workspace/gitrepos/time_repative/jdk7_time";
+		String testRoot = null;
+		String project = "jdk7_time";
+		
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, null);
+		proInfo.collectProInfo2();
+		
+		assertFalse(proInfo.getProjectRepre().allPackageMap.isEmpty());
+		
+		for (ClassRepre cls : proInfo.getProjectRepre().fullNameToClazzesMap.values()) {
+			System.out.println(cls);
+		}
+		ClassRepre dataCls = proInfo.getProjectRepre().fullNameToClazzesMap.get("java.util.Date");
+		assertNotNull(dataCls);
+		
+		for(FieldRepre field: dataCls.getFields()) {
+			if(field.getName().equals("wtb")) {
+				assertEquals(field.getType(), "String[]");
+			}
+		}
+	}
+	
 }
