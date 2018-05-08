@@ -189,6 +189,11 @@ public class ProInfo2Test {
 		}
 		
 		assertNotNull(proInfo.getProjectRepre().fullNameToClazzesMap.get("java.lang.String"));
+		
+		ClassRepre mathCls = proInfo.getProjectRepre().fullNameToClazzesMap.get("java.lang.Math");
+		assertNotNull(mathCls);
+		
+		System.out.println(mathCls.getMethodRepreByName("abs"));
 	}
 	
 	@Test
