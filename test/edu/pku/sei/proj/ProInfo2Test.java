@@ -154,6 +154,29 @@ public class ProInfo2Test {
 				
 	}
 	
+	@Test
+	public void test_Lang_34(){
+		String srcRoot = "/home/nightwish/workspace/defects4j/src/lang/lang_34_buggy/src/main/java/";
+		String testRoot = "/home/nightwish/workspace/defects4j/src/lang/lang_34_buggy/src/test/java/";
+		String project = "lang_34";
+		
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, null);
+		proInfo.collectProInfo2();
+		
+		ProjectRepre proj = proInfo.getProjectRepre();
+		
+//		for(ClassRepre cls : proj.fullNameToClazzesMap.values()){
+//			System.out.println(cls);
+//		}
+		
+		ClassRepre cls = proj.fullNameToClazzesMap.get("org.apache.commons.lang3.builder.ToStringStyle");
+		assertNotNull(cls);
+		
+		assertTrue(cls.getFieldRepreByName("REGISTRY") != null);
+		System.out.println(cls.getFieldRepreByName("REGISTRY"));
+				
+	}
+	
 	
 	@Test
 	public void test_JSci(){
