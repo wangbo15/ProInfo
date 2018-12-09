@@ -243,4 +243,29 @@ public class ProInfo2Test {
 		}
 	}
 	
+	@Test
+	public void test_BugsDotJar_ACCUMULO_151(){
+		String srcRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/accumulo/src/core/src/main/java";
+		String testRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/accumulo/src/core/src/test/java";
+		String project = "accumulo_151";
+		
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, null);
+		proInfo.collectProInfo2();
+		
+		assertFalse(proInfo.getProjectRepre().allPackageMap.isEmpty());
+		
+		for (ClassRepre cls : proInfo.getProjectRepre().fullNameToClazzesMap.values()) {
+			System.out.println(cls);
+		}
+		ClassRepre combinerCls = proInfo.getProjectRepre().fullNameToClazzesMap.get("org.apache.accumulo.core.iterators.Combiner");
+		assertNotNull(combinerCls);
+		
+		List<MethodRepre> mtds  = combinerCls.getMethodRepreByName("findTop");
+		assertEquals(mtds.size(), 1);
+		
+		MethodRepre mtd = mtds.get(0);
+		assertNotNull(mtd);
+		assertEquals(mtd.getReturnType(), "void");
+	}
+	
 }
