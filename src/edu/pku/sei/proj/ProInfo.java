@@ -158,7 +158,7 @@ public class ProInfo implements Serializable  {
 	}
 	
 	private void travereForPackageInfo(List<File> srcFileList) {
-		for(File f : srcFileList) {
+		for(File f : srcFileList) {	
 			CompilationUnit cu = (CompilationUnit) JavaFile.genASTFromSourceWithType(
 					JavaFile.readFileToString(f),
 					ASTParser.K_COMPILATION_UNIT, 

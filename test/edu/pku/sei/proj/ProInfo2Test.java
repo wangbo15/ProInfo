@@ -243,4 +243,14 @@ public class ProInfo2Test {
 		}
 	}
 	
+	@Test
+	public void test_Camel_8592() {
+		String srcRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/main/java";
+		String project = "camel_8592";
+		
+		ProInfo proInfo = new ProInfo(project, srcRoot, null, "1.7");
+		proInfo.collectProInfo2();
+		
+	}
+	
 }
