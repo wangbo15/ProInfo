@@ -11,13 +11,13 @@ public class ClassRepre implements Serializable {
 
 	private static final long serialVersionUID = 160218840478062973L;
 
-	private transient File srcFile;
+	private File srcFile;
 	
 	private transient int startPosition = -1;
 	
 	private PackageRepre pkg;
 	private String name;
-		
+	
 	private ClassRepre fatherCls;
 	private List<ClassRepre> superInterfaces;
 	
@@ -148,9 +148,13 @@ public class ClassRepre implements Serializable {
 		this.isLibaryClz = isLibaryClz;
 	}
 	
+	public String getFullName() {
+		return pkg.getPkgName() + "." + name;
+	}
+	
 	@Override
 	public String toString() {
-		return pkg.getPkgName() + "." + name  + (fatherCls == null ? " " : " EXTENDS " + fatherCls.getName()) + ", flag=" + flag + "]";
+		return getFullName() + (fatherCls == null ? " " : " EXTENDS " + fatherCls.getName()) + ", flag=" + flag + "]";
 	}
 
 	@Override

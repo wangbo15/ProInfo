@@ -8,9 +8,10 @@ import java.util.List;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.junit.Test;
+import org.junit.Ignore;;
+
 
 public class ProInfo2Test {
-	
 
 	@Test
 	public void test_Chart_1(){
@@ -28,7 +29,14 @@ public class ProInfo2Test {
 		
 		//chart-1 has 654 java files, while 656 class. 
 		//Two un-public classes are not main cls of the java file: WindDataItem and JFreeChartInfo
-		assertEquals(656, proRe.fullNameToClazzesMap.size());
+		int clientClsNum = 0;
+		for(ClassRepre cls : proRe.fullNameToClazzesMap.values()) {
+			if(cls.isLibaryClz() == false && cls.getName().contains("$") == false) {
+				clientClsNum++;
+			}
+		}
+		
+		assertEquals(656, clientClsNum);
 	}
 	
 	@Test
@@ -155,6 +163,8 @@ public class ProInfo2Test {
 				
 	}
 	
+	@Deprecated
+	@Ignore
 	@Test
 	public void test_Lang_34(){
 		String srcRoot = "/home/nightwish/workspace/defects4j/src/lang/lang_34_buggy/src/main/java/";
@@ -175,7 +185,6 @@ public class ProInfo2Test {
 		
 		assertTrue(cls.getFieldRepreByName("REGISTRY") != null);
 		System.out.println(cls.getFieldRepreByName("REGISTRY"));
-				
 	}
 	
 	
