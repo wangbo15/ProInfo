@@ -252,7 +252,7 @@ public class ProInfo2Test {
 		String srcRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/main/java";
 		String testRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/test/java";
 		
-		String project = "camel_3388_test";
+		String project = "camel_3388";
 		
 		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, "1.7");
 		proInfo.collectProInfo2();

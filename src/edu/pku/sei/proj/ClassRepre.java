@@ -11,9 +11,9 @@ public class ClassRepre implements Serializable {
 
 	private static final long serialVersionUID = 160218840478062973L;
 
-	private File srcFile;
+	private transient File srcFile;
 	
-	private int startPosition = -1;
+	private transient int startPosition = -1;
 	
 	private PackageRepre pkg;
 	private String name;

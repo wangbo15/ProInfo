@@ -32,7 +32,7 @@ public class ProInfo implements Serializable  {
 	private transient Map<File, CompilationUnit> fileToCuBuffer = new HashMap<>();
 	private transient Map<File, PackageRepre> fileToPkgRepBuffer = new HashMap<>();
 	
-	public static Set<String> javaDotLangClasses = new HashSet<>();
+	public transient static Set<String> javaDotLangClasses = new HashSet<>();
 	
 	static{
 		try {
@@ -156,9 +156,19 @@ public class ProInfo implements Serializable  {
 		this.cleanUp();
 		this.mergeUntilFix();
 		
+		this.releaseMemory();
+		
 		System.out.println(">>>> PROJECT INFO FINISHED FOR " + proName);
 	}
 	
+	private void releaseMemory() {
+		this.fileToCuBuffer.clear();
+		this.fileToPkgRepBuffer.clear();
+		javaDotLangClasses.clear();
+		
+		System.gc();
+	}
+
 	private void travereForPackageInfo(List<File> srcFileList) {
 		for(File f : srcFileList) {	
 			CompilationUnit cu = (CompilationUnit) JavaFile.genASTFromSourceWithType(
