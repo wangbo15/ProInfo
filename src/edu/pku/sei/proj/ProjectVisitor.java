@@ -25,7 +25,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
-
+@Deprecated
 public class ProjectVisitor extends ASTVisitor {
 	
 	private File file;

@@ -29,11 +29,11 @@ public class ClassRepre implements Serializable {
 		
 	private List<MethodRepre> methods = new ArrayList<>();
 	
-	
 	private ClassRepre containerCls;
 	
+	private boolean isLibaryClz = false;
+
 	public ClassRepre(File srcFile, int startPosition, PackageRepre pkg, String clsName) {
-		super();
 		this.pkg = pkg;
 		this.srcFile = srcFile;
 		this.name = clsName;
@@ -140,10 +140,54 @@ public class ClassRepre implements Serializable {
 		return null;
 	}
 	
+	public boolean isLibaryClz() {
+		return isLibaryClz;
+	}
+
+	public void setLibaryClz(boolean isLibaryClz) {
+		this.isLibaryClz = isLibaryClz;
+	}
 	
 	@Override
 	public String toString() {
 		return pkg.getPkgName() + "." + name  + (fatherCls == null ? " " : " EXTENDS " + fatherCls.getName()) + ", flag=" + flag + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((pkg == null) ? 0 : pkg.hashCode());
+		result = prime * result + ((srcFile == null) ? 0 : srcFile.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ClassRepre other = (ClassRepre) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (pkg == null) {
+			if (other.pkg != null)
+				return false;
+		} else if (!pkg.equals(other.pkg))
+			return false;
+		if (srcFile == null) {
+			if (other.srcFile != null)
+				return false;
+		} else if (!srcFile.equals(other.srcFile))
+			return false;
+		return true;
 	}	
 	
 }

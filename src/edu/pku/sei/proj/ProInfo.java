@@ -132,8 +132,10 @@ public class ProInfo implements Serializable  {
 	public void collectProInfo2() {
 		assert srcRoot != null;
 		System.out.println(">>>> PROJECT INFO BEGIN FOR " + proName);
+		System.out.println(">>>> FROM ROOT " + srcRoot);
 		
 		File rootFile = new File(srcRoot);
+		assert rootFile.exists();
 		
 		List<File> srcFileList = new ArrayList<File>(128);
 		getFileList(rootFile, srcFileList);
@@ -198,7 +200,7 @@ public class ProInfo implements Serializable  {
 			
 			assert fileToPkgRepBuffer.containsKey(f);
 			PackageRepre pkgRep = fileToPkgRepBuffer.get(f);
-			InnerClazzVisitor visitor = new InnerClazzVisitor(f, projectRepre, pkgRep);
+			InnerClazzAndInheranceVisitor visitor = new InnerClazzAndInheranceVisitor(f, projectRepre, pkgRep);
 			cu.accept(visitor);
 		}
 	}
@@ -210,9 +212,12 @@ public class ProInfo implements Serializable  {
 	
 	private void mergeUntilFix(){
 		Set<ClassRepre> holdSuperCls = new HashSet<>();
+		
+		Set<String> tmp = new HashSet<>();
 		for(ClassRepre cls : projectRepre.fullNameToClazzesMap.values()){
 			if(cls.getFatherCls() != null){
 				holdSuperCls.add(cls);
+				tmp.add(cls.getName());
 			}
 		}
 

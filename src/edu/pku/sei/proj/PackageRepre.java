@@ -54,5 +54,30 @@ public class PackageRepre implements Serializable  {
 	public String toString() {
 		return "PackageRepre [pkgName=" + pkgName + "]";
 	}
-		
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((pkgName == null) ? 0 : pkgName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PackageRepre other = (PackageRepre) obj;
+		if (pkgName == null) {
+			if (other.pkgName != null)
+				return false;
+		} else if (!pkgName.equals(other.pkgName))
+			return false;
+		return true;
+	}
+	
 }

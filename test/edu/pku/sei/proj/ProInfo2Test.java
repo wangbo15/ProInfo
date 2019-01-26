@@ -42,7 +42,8 @@ public class ProInfo2Test {
 		
 		proInfo.collectProInfo2();
 		
-		ClassRepre clsRepre = proInfo.getProjectRepre().getPackage("org.jfree.chart.renderer.category").getClassRepre("AbstractCategoryItemRenderer");
+		PackageRepre pkgRepre = proInfo.getProjectRepre().getPackage("org.jfree.chart.renderer.category");
+		ClassRepre clsRepre = pkgRepre.getClassRepre("AbstractCategoryItemRenderer");
 		
 		int fileFlds = 0;
 		for(FieldRepre fld : clsRepre.getFields()){
@@ -61,12 +62,12 @@ public class ProInfo2Test {
 		assertEquals(fileMtd, 66);
 		//public boolean isSeriesVisibleInLegend(int series), decleared in the father class AbstractRenderer
 		List<MethodRepre> res = clsRepre.getMethodRepreByName("isSeriesVisibleInLegend");
-		assertEquals(res.size(), 1);
+		assertEquals(1, res.size());
 		MethodRepre mtd0 = res.get(0);
-		assertEquals(mtd0.getCls().getName(), "AbstractRenderer");
+		assertEquals("AbstractRenderer", mtd0.getCls().getName());
 		assertFalse(Modifier.isStatic(mtd0.getFlag()));
-		assertEquals(mtd0.getParams().size(), 1);
-		assertEquals(mtd0.getParams().get(0).getName(), "series");
+		assertEquals(1, mtd0.getParams().size());
+		assertEquals("series", mtd0.getParams().get(0).getName());
 		
 		//baseLegendTextFont is a private fld of father cls
 		assertNull(clsRepre.getFieldRepreByName("baseLegendTextFont"));
@@ -243,14 +244,30 @@ public class ProInfo2Test {
 		}
 	}
 	
+	/**
+	 * Make sure the branch is camel-3388
+	 */
 	@Test
-	public void test_Camel_8592() {
+	public void test_Camel_3388() {
 		String srcRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/main/java";
-		String project = "camel_8592";
+		String testRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/test/java";
 		
-		ProInfo proInfo = new ProInfo(project, srcRoot, null, "1.7");
+		String project = "camel_3388_test";
+		
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, "1.7");
 		proInfo.collectProInfo2();
 		
+		ClassRepre combinerCls = proInfo.getProjectRepre().fullNameToClazzesMap.get("org.apache.camel.component.bean.BeanWithHeadersAndBodyInject3Test");
+		
+		assertNotNull(combinerCls);
+		assertEquals("ContextTestSupport", combinerCls.getFatherCls().getName());
+	
+		assertEquals("TestSupport", combinerCls.getFatherCls().getFatherCls().getName());
+		
+		ClassRepre testCase = combinerCls.getFatherCls().getFatherCls().getFatherCls();
+		assertNotNull(testCase);
+		assertEquals("TestCase", testCase.getName());
+		assertTrue(testCase.isLibaryClz());
 	}
 	
 }
