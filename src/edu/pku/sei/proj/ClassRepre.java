@@ -190,4 +190,17 @@ public class ClassRepre implements Serializable {
 		return true;
 	}	
 	
+	public ClassRepre getTopFatherCls() {
+		ClassRepre curr = this;
+		ClassRepre res = null;
+		do {
+			ClassRepre father =  curr.getFatherCls();
+			if(father != null) {
+				res = father;
+			}
+			curr = father;
+		}while(curr != null);
+		
+		return res;
+	}
 }
