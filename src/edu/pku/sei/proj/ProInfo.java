@@ -29,10 +29,10 @@ public class ProInfo implements Serializable  {
 	
 	private ProjectRepre projectRepre;
 	
-	private transient Map<File, CompilationUnit> fileToCuBuffer = new HashMap<>();
-	private transient Map<File, PackageRepre> fileToPkgRepBuffer = new HashMap<>();
+	private transient Map<File, CompilationUnit> fileToCuBuffer = new HashMap<>(256);
+	private transient Map<File, PackageRepre> fileToPkgRepBuffer = new HashMap<>(256);
 	
-	public transient static Set<String> javaDotLangClasses = new HashSet<>();
+	public transient static Set<String> javaDotLangClasses = new HashSet<>(128);
 	
 	static{
 		try {
@@ -140,14 +140,16 @@ public class ProInfo implements Serializable  {
 		List<File> srcFileList = new ArrayList<File>(256);
 		getFileList(rootFile, srcFileList);
 		
-		System.out.println("SRC FILE NUM: " + srcFileList.size());
+		System.out.println(">>>> SRC FILE NUM: " + srcFileList.size());
 		
 		if(testRoot != null){
 			File testRootFile = new File(testRoot);
 			assert testRootFile.exists();
 			
-			List<File> testFileList = new ArrayList<File>(128);
+			List<File> testFileList = new ArrayList<File>(256);
 			getFileList(testRootFile, testFileList);
+			
+			System.out.println(">>>> TEST FILE NUM: " + testFileList.size());
 			
 			srcFileList.addAll(testFileList);
 		}
