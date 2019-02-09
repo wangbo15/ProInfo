@@ -3,6 +3,7 @@ package edu.pku.sei.proj;
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -70,19 +71,13 @@ public class ProjectRepre implements Serializable {
 		return pkg.getClassRepre(clsName);
 	}
 	
-	
 	public void removeEmptyPkgs(){
-		Map<String, PackageRepre> tmpMap = new HashMap<>();
-		for(Entry<String, PackageRepre> entry : allPackageMap.entrySet()){
+		Iterator<Entry<String, PackageRepre>> it = allPackageMap.entrySet().iterator();  
+		while(it.hasNext()) {
+			Entry<String, PackageRepre> entry = it.next();
 			if(entry.getValue().getClazzesMap().size() == 0){
-				continue;
-			}else{
-				tmpMap.put(entry.getKey(), entry.getValue());
+				it.remove();
 			}
 		}
-		allPackageMap.clear();
-		allPackageMap = null;
-		allPackageMap = tmpMap;
 	}
-	
 }

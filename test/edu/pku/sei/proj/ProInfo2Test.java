@@ -279,4 +279,15 @@ public class ProInfo2Test {
 		assertTrue(testCase.isLibaryClz());
 	}
 	
+	@Test
+	public void test_Camel_Memory() {
+		String srcRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/main/java";
+		String testRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/test/java";
+		
+		String project = "camel_7459";
+		
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, "1.7");
+		proInfo.collectProInfo2();
+	}
+	
 }

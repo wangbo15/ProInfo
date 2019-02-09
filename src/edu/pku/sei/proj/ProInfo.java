@@ -137,8 +137,10 @@ public class ProInfo implements Serializable  {
 		File rootFile = new File(srcRoot);
 		assert rootFile.exists();
 		
-		List<File> srcFileList = new ArrayList<File>(128);
+		List<File> srcFileList = new ArrayList<File>(256);
 		getFileList(rootFile, srcFileList);
+		
+		System.out.println("SRC FILE NUM: " + srcFileList.size());
 		
 		if(testRoot != null){
 			File testRootFile = new File(testRoot);
@@ -153,6 +155,7 @@ public class ProInfo implements Serializable  {
 		travereForPackageInfo(srcFileList);
 		travereForClazzInfo(srcFileList);
 		travereForInnerClazzInfo(srcFileList);
+		
 		this.cleanUp();
 		this.mergeUntilFix();
 		
@@ -170,7 +173,8 @@ public class ProInfo implements Serializable  {
 	}
 
 	private void travereForPackageInfo(List<File> srcFileList) {
-		for(File f : srcFileList) {	
+		for(File f : srcFileList) {
+			
 			CompilationUnit cu = (CompilationUnit) JavaFile.genASTFromSourceWithType(
 					JavaFile.readFileToString(f),
 					ASTParser.K_COMPILATION_UNIT, 
