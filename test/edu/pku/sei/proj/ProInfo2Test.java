@@ -253,32 +253,6 @@ public class ProInfo2Test {
 		}
 	}
 	
-	/**
-	 * Make sure the branch is camel-3388
-	 */
-	@Test
-	public void test_Camel_3388() {
-		String srcRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/main/java";
-		String testRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/test/java";
-		
-		String project = "camel_3388";
-		
-		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, "1.7");
-		proInfo.collectProInfo2();
-		
-		ClassRepre combinerCls = proInfo.getProjectRepre().fullNameToClazzesMap.get("org.apache.camel.component.bean.BeanWithHeadersAndBodyInject3Test");
-		
-		assertNotNull(combinerCls);
-		assertEquals("ContextTestSupport", combinerCls.getFatherCls().getName());
-	
-		assertEquals("TestSupport", combinerCls.getFatherCls().getFatherCls().getName());
-		
-		ClassRepre testCase = combinerCls.getFatherCls().getFatherCls().getFatherCls();
-		assertNotNull(testCase);
-		assertEquals("TestCase", testCase.getName());
-		assertTrue(testCase.isLibaryClz());
-	}
-	
 	@Test
 	public void test_Camel_Memory() {
 		String srcRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/main/java";
@@ -290,4 +264,40 @@ public class ProInfo2Test {
 		proInfo.collectProInfo2();
 	}
 	
+	/**
+	 * Make sure the branch is camel-3388
+	 */
+	@Test
+	public void test_Camel_3388() {
+		String srcRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/main/java";
+		String testRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/test/java";
+		String project = "camel_3388";
+		String test = "org.apache.camel.component.bean.BeanWithHeadersAndBodyInject3Test";
+		
+		checkIsJunit3(project, srcRoot, testRoot, test);
+	}
+	
+	@Test
+	public void test_Camel_8592_Junit3() {
+		String srcRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/main/java";
+		String testRoot = "/home/nightwish/workspace/bug_repair/bugs-dot-jar/camel/camel-core/src/test/java";
+		String project = "camel_8592";
+		String test = "org.apache.camel.processor.aggregator.CustomListAggregationStrategyEmptySplitTest";
+		
+		checkIsJunit3(project, srcRoot, testRoot, test);
+	}
+	
+	private void checkIsJunit3(String project, String srcRoot, String testRoot, String test) {
+		ProInfo proInfo = new ProInfo(project, srcRoot, testRoot, "1.7");
+		proInfo.collectProInfo2();
+		
+		ClassRepre testCls = proInfo.getProjectRepre().fullNameToClazzesMap.get(test);
+		
+		assertNotNull(testCls);
+		
+		ClassRepre testCase = testCls.getFatherCls().getFatherCls().getFatherCls();
+		assertNotNull(testCase);
+		assertEquals("TestCase", testCase.getName());
+		assertTrue(testCase.isLibaryClz());
+	}
 }
