@@ -29,10 +29,10 @@ public class ProInfo implements Serializable  {
 	
 	private ProjectRepre projectRepre;
 	
-	private transient Map<File, CompilationUnit> fileToCuBuffer = new HashMap<>();
-	private transient Map<File, PackageRepre> fileToPkgRepBuffer = new HashMap<>();
+	private transient Map<File, CompilationUnit> fileToCuBuffer = new HashMap<>(256);
+	private transient Map<File, PackageRepre> fileToPkgRepBuffer = new HashMap<>(256);
 	
-	public static Set<String> javaDotLangClasses = new HashSet<>();
+	public transient static Set<String> javaDotLangClasses = new HashSet<>(128);
 	
 	static{
 		try {
@@ -132,18 +132,24 @@ public class ProInfo implements Serializable  {
 	public void collectProInfo2() {
 		assert srcRoot != null;
 		System.out.println(">>>> PROJECT INFO BEGIN FOR " + proName);
+		System.out.println(">>>> FROM ROOT " + srcRoot);
 		
 		File rootFile = new File(srcRoot);
+		assert rootFile.exists();
 		
-		List<File> srcFileList = new ArrayList<File>(128);
+		List<File> srcFileList = new ArrayList<File>(256);
 		getFileList(rootFile, srcFileList);
+		
+		System.out.println(">>>> SRC FILE NUM: " + srcFileList.size());
 		
 		if(testRoot != null){
 			File testRootFile = new File(testRoot);
 			assert testRootFile.exists();
 			
-			List<File> testFileList = new ArrayList<File>(128);
+			List<File> testFileList = new ArrayList<File>(256);
 			getFileList(testRootFile, testFileList);
+			
+			System.out.println(">>>> TEST FILE NUM: " + testFileList.size());
 			
 			srcFileList.addAll(testFileList);
 		}
@@ -151,14 +157,26 @@ public class ProInfo implements Serializable  {
 		travereForPackageInfo(srcFileList);
 		travereForClazzInfo(srcFileList);
 		travereForInnerClazzInfo(srcFileList);
+		
 		this.cleanUp();
 		this.mergeUntilFix();
+		
+		this.releaseMemory();
 		
 		System.out.println(">>>> PROJECT INFO FINISHED FOR " + proName);
 	}
 	
+	private void releaseMemory() {
+		this.fileToCuBuffer.clear();
+		this.fileToPkgRepBuffer.clear();
+		javaDotLangClasses.clear();
+		
+		System.gc();
+	}
+
 	private void travereForPackageInfo(List<File> srcFileList) {
 		for(File f : srcFileList) {
+			
 			CompilationUnit cu = (CompilationUnit) JavaFile.genASTFromSourceWithType(
 					JavaFile.readFileToString(f),
 					ASTParser.K_COMPILATION_UNIT, 
@@ -198,7 +216,7 @@ public class ProInfo implements Serializable  {
 			
 			assert fileToPkgRepBuffer.containsKey(f);
 			PackageRepre pkgRep = fileToPkgRepBuffer.get(f);
-			InnerClazzVisitor visitor = new InnerClazzVisitor(f, projectRepre, pkgRep);
+			InnerClazzAndInheranceVisitor visitor = new InnerClazzAndInheranceVisitor(f, projectRepre, pkgRep);
 			cu.accept(visitor);
 		}
 	}
@@ -210,9 +228,12 @@ public class ProInfo implements Serializable  {
 	
 	private void mergeUntilFix(){
 		Set<ClassRepre> holdSuperCls = new HashSet<>();
+		
+		Set<String> tmp = new HashSet<>();
 		for(ClassRepre cls : projectRepre.fullNameToClazzesMap.values()){
 			if(cls.getFatherCls() != null){
 				holdSuperCls.add(cls);
+				tmp.add(cls.getName());
 			}
 		}
 

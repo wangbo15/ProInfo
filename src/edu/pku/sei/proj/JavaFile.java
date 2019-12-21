@@ -7,46 +7,24 @@
 
 package edu.pku.sei.proj;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 
-
-/**
- * This class contains some auxiliary methods that provide convenience
- * 
- * @author Jiajun
- *
- */
 
 public class JavaFile {
 
-	private final static String __name__ = "@JavaFile ";
 
-
-	/**
-	 * generate {@code CompilationUnit} from source code based on the specific
-	 * type (e.g., {@code ASTParser.K_COMPILATION_UNIT})
-	 * 
-	 * @param icu
-	 * @param type
-	 * @return
-	 */
-	public static ASTNode genASTFromSource(String icu, int type, String version) {
+	static ASTNode genASTFromSource(String icu, int type, String version) {
 		ASTParser astParser = ASTParser.newParser(AST.JLS8);
 		Map<?, ?> options = JavaCore.getOptions();
 		JavaCore.setComplianceOptions(version, options);
@@ -57,135 +35,15 @@ public class JavaFile {
 		return astParser.createAST(null);
 	}
 
-	public static ASTNode genASTFromSourceWithType(String icu, int type, String version, String srcRoot, String cuName) {
+	static ASTNode genASTFromSourceWithType(String icu, int type, String version, String srcRoot, String cuName) {
 		ASTParser astParser = ASTParser.newParser(AST.JLS8);
-		Map<?, ?> options = JavaCore.getOptions();
-		JavaCore.setComplianceOptions(version, options);
-		astParser.setCompilerOptions(options);
 		astParser.setSource(icu.toCharArray());
 		astParser.setKind(type);
-		astParser.setResolveBindings(true);
-		astParser.setEnvironment(getClassPath(), new String[] {srcRoot}, null, true);
-		astParser.setUnitName(cuName);
-		astParser.setBindingsRecovery(true);
+		astParser.setResolveBindings(false);
+		astParser.setBindingsRecovery(false);
 		return astParser.createAST(null);
 	}
 	
-	private static String[] getClassPath() {
-		String property = System.getProperty("java.class.path", ".");
-		return property.split(File.pathSeparator);
-	}
-
-	
-	/**
-	 * write {@code string} into file with mode as "not append"
-	 * 
-	 * @param filePath
-	 *            : path of file
-	 * @param string
-	 *            : message
-	 * @return
-	 */
-	public static boolean writeStringToFile(String filePath, String string) {
-		return writeStringToFile(filePath, string, false);
-	}
-
-	/**
-	 * write {@code string} to file with mode as "not append"
-	 * 
-	 * @param file
-	 *            : file of type {@code File}
-	 * @param string
-	 *            : message
-	 * @return
-	 */
-	public static boolean writeStringToFile(File file, String string) {
-		return writeStringToFile(file, string, false);
-	}
-
-	/**
-	 * write {@code string} into file with specific mode
-	 * 
-	 * @param filePath
-	 *            : file path
-	 * @param string
-	 *            : message
-	 * @param append
-	 *            : writing mode
-	 * @return
-	 */
-	public static boolean writeStringToFile(String filePath, String string, boolean append) {
-		if (filePath == null) {
-			return false;
-		}
-		File file = new File(filePath);
-		return writeStringToFile(file, string, append);
-	}
-
-	/**
-	 * write {@code string} into file with specific mode
-	 * 
-	 * @param file
-	 *            : file of type {@code File}
-	 * @param string
-	 *            : message
-	 * @param append
-	 *            : writing mode
-	 * @return
-	 */
-	public static boolean writeStringToFile(File file, String string, boolean append) {
-		if (file == null || string == null) {
-			return false;
-		}
-		if (!file.exists()) {
-			try {
-				file.getParentFile().mkdirs();
-				file.createNewFile();
-			} catch (IOException e) {
-				return false;
-			}
-		}
-		BufferedWriter bufferedWriter = null;
-		try {
-			bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, append), "UTF-8"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			bufferedWriter.write(string);
-			bufferedWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (bufferedWriter != null) {
-				try {
-					bufferedWriter.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * read string from file
-	 * 
-	 * @param filePath
-	 *            : file path
-	 * @return : string in the file
-	 */
-	public static String readFileToString(String filePath) {
-		if (filePath == null) {
-			return new String();
-		}
-		File file = new File(filePath);
-		if (!file.exists() || !file.isFile()) {
-			return new String();
-		}
-		return readFileToString(file);
-	}
 
 	/**
 	 * read string from file
@@ -194,7 +52,7 @@ public class JavaFile {
 	 *            : file of type {@code File}
 	 * @return : string in the file
 	 */
-	public static String readFileToString(File file) {
+	static String readFileToString(File file) {
 		if (file == null) {
 			return new String();
 		}

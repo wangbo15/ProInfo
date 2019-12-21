@@ -6,26 +6,21 @@ import java.lang.reflect.Modifier;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
-import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 
-public class ClsCollectorVisitor extends ASTVisitor {
-		
-	private File file;
-	private ProjectRepre projectRepre;
-	private PackageRepre pkgRepre;
+public class ClsCollectorVisitor extends AbsClassVisitor {
+	
 	
 	public ClsCollectorVisitor(File file, ProjectRepre projectRepre, PackageRepre pkgRepre) {
-		this.file = file;
-		this.projectRepre = projectRepre;
-		this.pkgRepre = pkgRepre;
+		super(file, projectRepre, pkgRepre);
 	}
 	
-	private ClsCollectorVisitor(){}
+	private ClsCollectorVisitor(){
+		super(null, null, null);
+	}
 
 	public static String typeDeclToClassName(CompilationUnit cu,TypeDeclaration td){
 		String res;
@@ -62,30 +57,6 @@ public class ClsCollectorVisitor extends ASTVisitor {
 		}
 	}
 	
-	protected static String typeDeclToClassName(TypeDeclaration node){
-		
-		String className = "";
-		ASTNode father = null;
-		ASTNode curNode = node;
-		while((father  = curNode.getParent()) != null){
-			if(curNode instanceof TypeDeclaration){
-				TypeDeclaration curNodeTD = (TypeDeclaration) curNode;
-				className = curNodeTD.getName().getIdentifier() + "$" + className;
-			}else if(curNode instanceof AnnotationTypeDeclaration){
-				AnnotationTypeDeclaration curNodeTD = (AnnotationTypeDeclaration) curNode;
-				className = curNodeTD.getName().getIdentifier() + "$" + className;
-			}else if(curNode instanceof EnumDeclaration){
-				EnumDeclaration curNodeTD = (EnumDeclaration) curNode;
-				className = curNodeTD.getName().getIdentifier() + "$" + className;
-			}else {
-				throw new Error(curNode.getClass().getName());
-			}
-			curNode = father;
-		}
-		
-		return className.substring(0, className.length() - 1);
-	}
-	
 	@Override
 	public boolean visit(EnumDeclaration node) {
 		return super.visit(node);
@@ -104,10 +75,11 @@ public class ClsCollectorVisitor extends ASTVisitor {
 		
 //		System.out.println(">>>>>>>>" + file.getName() + "  " + node.getName());
 //		System.out.println("\t\t\t" +  className);
-				
+		
 		ClassRepre currentCls = this.pkgRepre.getOrNewClassRepre(file, node.getStartPosition(), className);
 
 		currentCls.setFlag(node.getModifiers());
+		currentCls.setInterface(node.isInterface());
 		
 		setContainterCls(currentCls, node);
 		
@@ -118,23 +90,8 @@ public class ClsCollectorVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * Omit anonymous class
+	 * Visitor for TypeDeclaration  
 	 */
-	@Override
-	public boolean visit(AnonymousClassDeclaration node) {
-		return false;
-	}
-	
-	/**
-	 * Omit td in methods
-	 */
-	@Override
-	public boolean visit(TypeDeclarationStatement node) {
-		return false;
-	}
-
-
-
 	private class TDVisitor extends ASTVisitor{
 		public String name = null;
 		public String mainClsName = null;

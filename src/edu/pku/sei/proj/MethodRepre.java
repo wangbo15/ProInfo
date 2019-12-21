@@ -8,6 +8,7 @@ import java.util.List;
 public class MethodRepre implements Serializable  {
 
 	private static final long serialVersionUID = -3430329033484796237L;
+	
 	private ClassRepre cls;
 	private int flag;
 	private String name;
